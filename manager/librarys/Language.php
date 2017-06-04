@@ -2,6 +2,9 @@
 
     namespace Librarys;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Environment;
     use Librarys\File\FileInfo;
 
@@ -61,7 +64,7 @@
                 foreach ($arrayKeys AS $entry) {
                     $entry = trim($entry);
 
-                    if (array_key_exists($entry, $array) == false)
+                    if (is_array($array) == false || array_key_exists($entry, $array) == false)
                         return trigger_error('Key "' . $name . '" not found in language "' . $filepath . '"');
 
                     $array = $array[$entry];

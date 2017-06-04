@@ -1,10 +1,10 @@
 <?php
 
     use Librarys\File\FileInfo;
+    use Librarys\File\FileCurl;
     use Librarys\App\AppDirectory;
     use Librarys\App\AppLocationPath;
     use Librarys\App\AppParameter;
-    use Librarys\App\AppURLCurl;
 
     define('LOADED',               1);
     define('EXISTS_FUNC_OVERRIDE', 1);
@@ -15,12 +15,9 @@
 
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     $title   = lng('import.title_page');
-    $themes  = [ env('resource.theme.file') ];
-    $scripts = [ env('resource.javascript.more_input_url') ];
+    $themes  = [ env('resource.filename.theme.file') ];
+    $scripts = [ env('resource.filename.javascript.more_input_url') ];
     $appAlert->setID(ALERT_IMPORT);
     require_once('incfiles' . SP . 'header.php');
 
@@ -42,7 +39,7 @@
         'is_empty'    => true,
         'urls_count'  => 0,
         'exists_func' => EXISTS_FUNC_OVERRIDE,
-        'mode_import' => AppURLCurl::isSupportCurl() ? MODE_IMPORT_CURL : MODE_IMPORT_SOCKET
+        'mode_import' => FileCurl::isSupportCurl() ? MODE_IMPORT_CURL : MODE_IMPORT_SOCKET
     ];
 
     if (isset($_POST['import'])) {
@@ -75,7 +72,7 @@
                     $forms['filenames'][$index] = addslashes($_POST['filenames'][$index]);
 
                     if ($isFailed == false && empty($url) == false && empty($forms['filenames'][$index]) == false && FileInfo::isNameValidate($forms['filenames'][$index]) == false)
-                        $appAlert->danger(lng('import.alert.name_url_import_not_validate', 'name', $forms['filenames'][$index]));
+                        $appAlert->danger(lng('import.alert.name_url_import_not_validate', 'name', $forms['filenames'][$index], 'validate', FileInfo::FILENAME_VALIDATE));
                 }
             }
 
@@ -94,19 +91,19 @@
                         if (isset($forms['filenames'][$i]))
                             $filename = $forms['filenames'][$i];
 
-                        $curl = new AppURLCurl($url);
+                        $curl = new FileCurl($url);
                         $curl->setUseCurl($forms['mode_import'] === MODE_IMPORT_CURL);
 
                         if ($curl->curl() == false) {
                             $errorInt = $curl->getErrorInt();
 
-                            if ($errorInt === AppURLCurl::ERROR_URL_NOT_FOUND)
+                            if ($errorInt === FileCurl::ERROR_URL_NOT_FOUND)
                                 $appAlert->danger(lng('import.alert.address_not_found', 'url', $url));
-                            else if ($errorInt === AppURLCurl::ERROR_NOT_FOUND)
+                            else if ($errorInt === FileCurl::ERROR_FILE_NOT_FOUND)
                                 $appAlert->danger(lng('import.alert.file_not_found', 'url', $url));
-                            else if ($errorInt === AppURLCurl::ERROR_AUTO_REDIRECT)
+                            else if ($errorInt === FileCurl::ERROR_AUTO_REDIRECT)
                                 $appAlert->danger(lng('import.alert.auto_redirect_url_failed', 'url', $url));
-                            else if ($errorInt === AppURLCurl::ERROR_CONNECT_FAILED)
+                            else if ($errorInt === FileCurl::ERROR_CONNECT_FAILED)
                                 $appAlert->danger(lng('import.alert.connect_url_failed', 'url', $url));
                             else
                                 $appAlert->danger(lng('import.alert.error_unknown', 'url', $url));
@@ -114,11 +111,15 @@
                             if (empty($filename))
                                 $filename = baseNameURL($curl->getURL());
 
-                            $fileWritePath        = FileInfo::validate($appDirectory->getDirectory() . SP . $filename);
+                            if (empty($filename))
+                                $filename = removePrefixHttpURL($curl->getURL());
+
+                            $filename             = FileInfo::fileNameFix($filename);
+                            $fileWritePath        = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $filename);
                             $fileWriteIsDirectory = FileInfo::isTypeDirectory($fileWritePath);
                             $fileWriteIsFile      = FileInfo::isTypeFile($fileWritePath);
                             $fileSizeStr          = FileInfo::sizeToString($curl->getBufferLength());
-                            $timeImport           = $curl->getTimeEndRun() - $curl->getTimeStartRun();
+                            $timeImport           = $curl->getTimeRun();
 
                             if ($timeImport < 60) {
                                 $timeImport = $timeImport . 's';
@@ -155,7 +156,7 @@
 
                                 for ($i = 0; $i < 50; ++$i) {
                                     $fileRename = rand(10000, 99999) . '_' . $filename;
-                                    $pathRename = FileInfo::validate($appDirectory->getDirectory() . SP . $fileRename);
+                                    $pathRename = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $fileRename);
 
                                     if (FileInfo::fileExists($pathRename) == false) {
                                         break;
@@ -245,7 +246,7 @@
                     <span><?php echo lng('import.form.input.label_mode_import'); ?></span>
                     <ul class="radio-choose-tab">
                         <li>
-                            <input type="radio" name="mode_import" value="<?php echo MODE_IMPORT_CURL; ?>" id="mode-import-curl"<?php if ($forms['mode_import'] == MODE_IMPORT_CURL) { ?> checked="checked"<?php } ?><?php if (AppURLCurl::isSupportCurl() == false) { ?> disabled="disabled"<?php } ?>/>
+                            <input type="radio" name="mode_import" value="<?php echo MODE_IMPORT_CURL; ?>" id="mode-import-curl"<?php if ($forms['mode_import'] == MODE_IMPORT_CURL) { ?> checked="checked"<?php } ?><?php if (FileCurl::isSupportCurl() == false) { ?> disabled="disabled"<?php } ?>/>
                             <label for="mode-import-curl">
                                 <span><?php echo lng('import.form.input.mode_import_curl'); ?></span>
                             </label>

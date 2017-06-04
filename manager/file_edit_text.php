@@ -12,9 +12,6 @@
 
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     if ($appDirectory->isFileSeparatorNameExists() == false)
         $appAlert->danger(lng('home.alert.path_not_exists'), ALERT_INDEX, env('app.http.host'));
     else if ($appDirectory->isPermissionDenyPath())
@@ -48,7 +45,7 @@
     else
         $title = lng('file_edit_text.title_page_as');
 
-    $themes = [ env('resource.theme.file') ];
+    $themes = [ env('resource.filename.theme.file') ];
     $appAlert->setID(ALERT_FILE_EDIT_TEXT);
     require_once('incfiles' . SP . 'header.php');
 
@@ -61,7 +58,7 @@
             'max'        => $appConfig->get('paging.file_edit_text')
         ],
 
-        'path'    => FileInfo::validate($appDirectory->getDirectoryAndName()),
+        'path'    => FileInfo::filterPaths($appDirectory->getDirectoryAndName()),
         'content' => null,
 
         'content_lines'      => null,

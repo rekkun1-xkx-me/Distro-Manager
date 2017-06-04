@@ -1,19 +1,36 @@
+div#content div#login,
+div#content ul.alert {
+    max-width: 320px;
+}
+
+@media all and (min-width: 560px) {
+    div#content div#login,
+    div#content ul.alert {
+        max-width: 480px;
+    }
+}
+
+@media all and (min-width: 680px) {
+    div#content div#login,
+    div#content ul.alert {
+        max-width: 560px;
+    }
+}
+
 div#content ul.alert {
     margin-left: auto;
     margin-right: auto;
-    max-width: 320px;
 }
 
 div#content div#login {
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
-    max-width: 320px;
     margin: 0 auto;
     margin-bottom: 140px;
     padding: 0;
@@ -71,11 +88,11 @@ div#content div#login-form-action a#forgot-password {
     display: inline-block;
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
     height: 40px;
     margin-right: 10px;
@@ -115,7 +132,12 @@ div#content div#login-form-action button {
     padding-right: 8px;
 }
 
-div#content div#login-form-action button:hover {
+div#content div#login-form-action button:disabled {
+    background-color: #a0a0a0;
+    cursor: default;
+}
+
+div#content div#login-form-action button:enabled:hover {
     background-color: #00a99b;
 }
 

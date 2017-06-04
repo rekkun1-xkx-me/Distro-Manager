@@ -1,13 +1,22 @@
 <?php
 
-    define('ALERT_LOGIN', 'alert_login');
+    if (defined('LOADED') == false)
+        exit;
+
     define('ALERT_INDEX', 'alert_index');
-
-    define('ALERT_SYSTEM_SETTING', 'alert_system_setting');
-
     define('ALERT_CREATE', 'alert_create');
     define('ALERT_UPLOAD', 'alert_upload');
     define('ALERT_IMPORT', 'alert_import');
+
+    define('ALERT_APP_ABOUT',        'alert_app_about');
+    define('ALERT_APP_CHECK_UPDATE', 'alert_app_check_update');
+    define('ALERT_APP_UPGRADE_APP',  'alert_app_upgrade_app');
+
+    define('ALERT_SYSTEM_SETTING',       'alert_system_setting');
+    define('ALERT_SYSTEM_SETTING_THEME', 'alert_system_setting_theme');
+
+    define('ALERT_USER_LOGIN',   'alert_user_login');
+    define('ALERT_USER_SETTING', 'alert_user_setting');
 
     define('ALERT_FILE_INFO',      'alert_file_info');
     define('ALERT_FILE_EDIT_TEXT', 'alert_file_edit_text');

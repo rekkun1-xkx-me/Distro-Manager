@@ -3,6 +3,9 @@
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
 
+    if (defined('LOADED') == false)
+        exit;
+
     require_once(__DIR__ . SP . 'Environment.php');
     require_once(__DIR__ . SP . 'Language.php');
     require_once(__DIR__ . SP . 'File' . SP . 'FileInfo.php');
@@ -10,6 +13,7 @@
     use Librarys\Environment;
     use Librarys\Language;
     use Librarys\File\FileInfo;
+    use Librarys\Encryption\Services_JSON;
 
     function env($name, $default = null, $renew = false)
     {
@@ -73,7 +77,7 @@
         return $str;
     }
 
-    function receiverIP()
+    function takeIP()
     {
         $arrayIP = array();
 
@@ -108,7 +112,7 @@
         return null;
     }
 
-    function receiverUserAgent()
+    function takeUserAgent()
     {
         if (getenv('HTTP_USER_AGENT') !== false)
             return getenv('HTTP_USER_AGENT');
@@ -118,6 +122,9 @@
 
     function isValidateIP($ip)
     {
+        if ($ip === null || is_string($ip) == false)
+            return false;
+
         if (preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $ip) != false)
             return true;
         else if (preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $ip) != false)
@@ -128,7 +135,7 @@
 
     function isValidateURL($url)
     {
-        if (empty($url) || empty($url))
+        if (empty($url))
             return false;
 
         $url = addPrefixHttpURL($url);
@@ -137,6 +144,20 @@
             if (filter_var($url, FILTER_VALIDATE_URL))
                 return true;
         } else if (preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $url)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function isValidateEmail($email) {
+        if (empty($email))
+            return false;
+
+        if (function_exists('filter_var') == false) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL))
+                return true;
+        } else if (preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/", $email)) {
             return true;
         }
 
@@ -162,11 +183,6 @@
             $value = stripslashes($value);
         else
             array_walk_recursive($value, __FUNCTION__);
-    }
-
-    function generatorDevRandResource()
-    {
-        return intval($_SERVER['REQUEST_TIME']);
     }
 
     function requireDefine($filename)
@@ -258,6 +274,16 @@
         return $prefix . $url;
     }
 
+    function removePrefixHttpURL($url)
+    {
+        if (stripos($url, 'http://') !== false)
+            return substr($url, 7);
+        else if (stripos($url, 'https://') !== false)
+            return substr($url, 8);
+
+        return $url;
+    }
+
     function baseNameURL($url)
     {
         $parseURLPath = @parse_url($url, PHP_URL_PATH);
@@ -266,6 +292,50 @@
             return $url;
 
         return basename($parseURLPath);
+    }
+
+    function jsonEncode($var)
+    {
+        if (function_exists('json_encode'))
+            return @json_encode($var);
+
+        require_once(__DIR__. SP . 'Encryption' . SP . 'Services_JSON.php');
+
+        $json   = new Services_JSON();
+        $result = $json->encode($var);
+
+        return $result;
+    }
+
+    function jsonDecode($var, $assoc = true)
+    {
+        if (function_exists('json_decode'))
+            return @json_decode($var, $assoc);
+
+        require_once(__DIR__. SP . 'Encryption' . SP . 'Services_JSON.php');
+
+        $json = new Services_JSON($assoc ? SERVICES_JSON_LOOSE_TYPE : 0);
+        $result = $json->decode($var);
+
+        return $result;
+    }
+
+    function installUpgradeCallbackExtractZip($event, $header)
+    {
+        if (FileInfo::isTypeFile($header['filename'])) {
+            if (FileInfo::unlink($header['filename']) == false)
+                return 0;
+        }
+        return 1;
+    }
+
+    function installAdditionalCallbackExtractZip($event, $header)
+    {
+        if (FileInfo::isTypeFile($header['filename'])) {
+            if (FileInfo::unlink($header['filename']) == false)
+                return 0;
+        }
+        return 1;
     }
 
 ?>

@@ -13,12 +13,9 @@
     set_time_limit(0);
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     $title   = lng('upload.title_page');
-    $themes  = [ env('resource.theme.file') ];
-    $scripts = [ env('resource.javascript.custom_input_file') ];
+    $themes  = [ env('resource.filename.theme.file') ];
+    $scripts = [ env('resource.filename.javascript.custom_input_file') ];
     $appAlert->setID(ALERT_UPLOAD);
     require_once('incfiles' . SP . 'header.php');
 
@@ -73,7 +70,7 @@
                     if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
                         $appAlert->danger(lng('upload.alert.file_error_max_size', 'filemame', $file['name']));
                     } else {
-                        $path        = FileInfo::validate($appDirectory->getDirectory() . SP . $file['name']);
+                        $path        = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $file['name']);
                         $isDirectory = FileInfo::isTypeDirectory($path);
                         $isFile      = FileInfo::isTypeFile($path);
                         $fileSizeStr = FileInfo::sizeToString($file['size']);
@@ -98,7 +95,7 @@
 
                             for ($i = 0; $i < 50; ++$i) {
                                 $fileRename = rand(10000, 99999) . '_' . $file['name'];
-                                $pathRename = FileInfo::validate($appDirectory->getDirectory() . SP . $fileRename);
+                                $pathRename = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $fileRename);
 
                                 if (FileInfo::fileExists($pathRename) == false) {
                                     break;

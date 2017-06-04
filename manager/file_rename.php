@@ -9,9 +9,6 @@
     define('LOADED', 1);
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     if ($appDirectory->isFileExistsDirectorySeparatorName() == false)
         $appAlert->danger(lng('home.alert.path_not_exists'), ALERT_INDEX, env('app.http.host'));
     else if ($appDirectory->isPermissionDenyPath($appDirectory->getDirectory()))
@@ -35,7 +32,7 @@
     else
         $title = lng('file_rename.title_page_file');
 
-    $themes  = [ env('resource.theme.file') ];
+    $themes  = [ env('resource.filename.theme.file') ];
     $appAlert->setID(ALERT_FILE_RENAME);
     require_once('incfiles' . SP . 'header.php');
 
@@ -55,14 +52,14 @@
                 $appAlert->danger(lng('file_rename.alert.not_input_name_file'));
         } else if (FileInfo::isNameValidate($forms['name']) == false) {
             if ($isDirectory)
-                $appAlert->danger(lng('file_rename.alert.name_directory_not_validate'));
+                $appAlert->danger(lng('file_rename.alert.name_directory_not_validate', 'validate', FileInfo::FILENAME_VALIDATE));
             else
-                $appAlert->danger(lng('file_rename.alert.name_file_not_validate'));
+                $appAlert->danger(lng('file_rename.alert.name_file_not_validate', 'validate', FileInfo::FILENAME_VALIDATE));
         } else if ($appDirectory->getName() == $forms['name']) {
             $appAlert->danger(lng('file_rename.alert.name_not_change'));
         } else {
-            $forms['path_old'] = FileInfo::validate($appDirectory->getDirectory() . SP . $appDirectory->getName());
-            $forms['path_new'] = FileInfo::validate($appDirectory->getDirectory() . SP . $forms['name']);
+            $forms['path_old'] = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appDirectory->getName());
+            $forms['path_new'] = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $forms['name']);
 
             if (FileInfo::rename($forms['path_old'], $forms['path_new']) == false) {
                 if ($isDirectory)

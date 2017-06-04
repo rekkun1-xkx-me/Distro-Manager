@@ -2,6 +2,11 @@
 
     namespace Librarys\CFSR;
 
+    if (defined('LOADED') == false)
+        exit;
+
+    use Librarys\Encryption\StringCrypt;
+
     final class CFSRToken
     {
 
@@ -40,14 +45,11 @@
             return ('token' .
                 md5(
                     base64_encode(
-                        $_SERVER['REMOTE_ADDR'] .
-                        $_SERVER['HTTP_USER_AGENT'] .
-                        $_SERVER['REQUEST_TIME'] .
+                        takeIP()             .
+                        takeUserAgent() .
+                        time()              .
 
-                        '@#$%^+&*(-)' .
-
-                        rand(10000, 99999) .
-                        rand(10000, 88888)
+                        StringCrypt::randomSalt()
                     )
                 )
             );

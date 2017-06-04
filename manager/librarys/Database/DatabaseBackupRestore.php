@@ -2,6 +2,9 @@
 
     namespace Librarys\Database;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\File\FileInfo;
 
     final class DatabaseBackupRestore
@@ -37,7 +40,7 @@
                 $extFile = FileInfo::extFile($filename);
 
                 if (strcasecmp($extFile, self::MIME) !== 0)
-                    FileInfo::unlink(FileInfo::validate($directory . SP . $filename));
+                    FileInfo::unlink(FileInfo::filterPaths($directory . SP . $filename));
             }
         }
 
@@ -233,9 +236,9 @@
 
 
             if ($pathCustom)
-                $filepath = FileInfo::validate($pathCustom);
+                $filepath = FileInfo::filterPaths($pathCustom);
             else
-                $filepath = FileInfo::validate($this->getPathFileDatabaseBackup($filename));
+                $filepath = FileInfo::filterPaths($this->getPathFileDatabaseBackup($filename));
 
             if (FileInfo::isTypeFile($filepath) == false)
                 return false;

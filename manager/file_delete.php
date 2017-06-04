@@ -9,9 +9,6 @@
     define('LOADED', 1);
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     if ($appDirectory->isFileExistsDirectorySeparatorName() == false)
         $appAlert->danger(lng('home.alert.path_not_exists'), ALERT_INDEX, env('app.http.host'));
     else if ($appDirectory->isPermissionDenyPath())
@@ -35,7 +32,7 @@
     else
         $title = lng('file_delete.title_page_file');
 
-    $themes  = [ env('resource.theme.file') ];
+    $themes  = [ env('resource.filename.theme.file') ];
     $appAlert->setID(ALERT_FILE_DELETE);
     require_once('incfiles' . SP . 'header.php');
 
@@ -43,7 +40,7 @@
         if ($isDirectory) {
             $isHasFileAppPermission = false;
 
-            if (FileInfo::rrmdir(FileInfo::validate($appDirectory->getDirectory() . SP . $appDirectory->getName()), null, $isHasFileAppPermission) && $isHasFileAppPermission == false) {
+            if (FileInfo::rrmdir(FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appDirectory->getName()), null, $isHasFileAppPermission) && $isHasFileAppPermission == false) {
                 $appParameter->remove(AppDirectory::PARAMETER_NAME_URL);
                 $appAlert->success(lng('file_delete.alert.delete_directory_success', 'filename', $appDirectory->getName()), ALERT_INDEX, 'index.php' . $appParameter->toString(true));
             } else {
@@ -58,7 +55,7 @@
                 }
             }
         } else {
-            if (FileInfo::unlink(FileInfo::validate($appDirectory->getDirectory() . SP . $appDirectory->getName()))) {
+            if (FileInfo::unlink(FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appDirectory->getName()))) {
                 $appParameter->remove(AppDirectory::PARAMETER_NAME_URL);
                 $appAlert->success(lng('file_delete.alert.delete_file_success', 'filename', $appDirectory->getName()), ALERT_INDEX, 'index.php' . $appParameter->toString(true));
             } else {

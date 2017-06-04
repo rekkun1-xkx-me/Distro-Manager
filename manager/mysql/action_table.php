@@ -10,13 +10,11 @@
 
     require_once('global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, env('app.http.host') . '/user/login.php');
-    else if ($appMysqlConfig->get('mysql_name') != null)
+    if ($appMysqlConfig->get('mysql_name') != null)
         $appAlert->danger(lng('mysql.list_database.alert.mysql_is_not_connect_root', 'name', $appMysqlConnect->getName()), ALERT_MYSQL_LIST_DATABASE, 'list_database.php');
 
-    $themes  = [ env('resource.theme.mysql') ];
-    $scripts = [ env('resource.javascript.checkbox_checkall') ];
+    $themes  = [ env('resource.filename.theme.mysql') ];
+    $scripts = [ env('resource.filename.javascript.checkbox_checkall') ];
     $appAlert->setID(ALERT_MYSQL_ACTION_TABLE);
     requireDefine('mysql_action_table');
 
@@ -111,7 +109,7 @@
         if (empty($forms['backup']['filename'])) {
             $appAlert->danger(lng('mysql.action_table.alert.backup.not_input_filename'));
         } else if (FileInfo::isNameValidate($forms['backup']['filename']) == false) {
-            $appAlert->danger(lng('mysql.action_table.alert.backup.filename_not_validate'));
+            $appAlert->danger(lng('mysql.action_table.alert.backup.filename_not_validate', 'validate', FileInfo::FILENAME_VALIDATE));
         } else if (FileInfo::fileExists($databaseBackupRestore->getPathFileDatabaseBackup())) {
             $appAlert->danger(lng('mysql.action_table.alert.backup.filename_is_exists', 'name', $forms['backup']['filename']));
         } else if ($databaseBackupRestore->backupInfomation() == false) {

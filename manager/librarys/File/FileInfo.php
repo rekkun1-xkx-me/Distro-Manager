@@ -2,6 +2,9 @@
 
 	namespace Librarys\File;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Zip\PclZip;
 
 	final class FileInfo
@@ -10,6 +13,8 @@
 		private $filePath;
 		private $fileExt;
 		private $fileMime;
+
+        const FILENAME_VALIDATE = '\\/:*?"<>|';
 
 		public function __construct($filePath, $receiverMime = true)
 		{
@@ -73,7 +78,7 @@
 
         public static function isNameValidate($name)
         {
-            return strpbrk($name, '\\/:*?"<>|') == false;
+            return strpbrk($name, self::FILENAME_VALIDATE) == false;
         }
 
         public static function fileNameFix($name)
@@ -89,11 +94,13 @@
             $buffer = null;
 
             foreach ($chars AS $char) {
-                if (self::isNameValidate($name))
-                    $buffer .= $name;
+                if (self::isNameValidate($char))
+                    $buffer .= $char;
+                else
+                    $buffer .= '_';
             }
 
-            return $name;
+            return $buffer;
         }
 
 		public static function extFile($file)
@@ -177,7 +184,7 @@
 
                         $isFirstIndexBuffer = true;
                     } else {
-                        $pathBuffer = self::validate($pathBuffer . $separator . $entry);
+                        $pathBuffer = self::filterPaths($pathBuffer . $separator . $entry);
                     }
 
                     if (self::fileExists($pathBuffer) == false && @mkdir($pathBuffer) == false)
@@ -186,6 +193,11 @@
             }
 
             return true;
+        }
+
+        public static function copySystem($old, $new)
+        {
+            return @copy($old, $new);
         }
 
         /**
@@ -221,7 +233,7 @@
                         if ($file == null)
                             return true;
 
-                        if (@copy($path, $file) == false)
+                        if (self::copySystem($path, $file) == false)
                             return false;
 
                         if ($move)
@@ -263,7 +275,7 @@
                     if ($new == null)
                         return true;
 
-                    if (@copy($old, $new) == false)
+                    if (self::copySystem($old, $new) == false)
                         return false;
 
                     if ($move)
@@ -275,7 +287,7 @@
                 if (self::permissionDenyPath($old) || self::permissionDenyPath($new)) {
                     $isHasFileAppPermission = true;
                 } else {
-                    $handle = @scandir($old);
+                    $handle = self::scanDirectory($old);
 
                     if ($handle !== false) {
                         if (($parent && $old != SP) || $parent == false) {
@@ -312,7 +324,7 @@
                                     if ($dest == null)
                                         return true;
 
-                                    if (@copy($source, $dest) == false)
+                                    if (self::copySystem($source, $dest) == false)
                                         return false;
 
                                     if ($move)
@@ -366,6 +378,11 @@
             return rename($old, $new);
         }
 
+        public static function rmdir($path)
+        {
+            return @rmdir($path);
+        }
+
         /**
          * [rrmdir Delete directory and delete entry in directory]
          * @param  [string|array]  $path                    [Path directory or array entry]
@@ -373,20 +390,20 @@
          * @param  boolean         &$isHasFileAppPermission [Flag set true if has directory app]
          * @return [boolean]                                [Return true if delete success]
          */
-        public static function rrmdir($path, $directory = null, & $isHasFileAppPermission = false)
+        public static function rrmdir($path, $directory = null, &$isHasFileAppPermission = false, $isCheckPermissionApp = true)
         {
             if (is_array($path)) {
 
                 foreach ($path AS $entry) {
                     $filename = $directory . SP . $entry;
 
-                    if (self::permissionDenyPath($filename)) {
+                    if ($isCheckPermissionApp && self::permissionDenyPath($filename)) {
                         $isHasFileAppPermission = true;
                     } else if (self::isTypeFile($filename)) {
                         if (self::unlink($filename) == false)
                             return false;
                     } else if (self::isTypeDirectory($filename)) {
-                        if (self::rrmdir($filename, null, $isHasFileAppPermission) == false)
+                        if (self::rrmdir($filename, null, $isCheckPermissionApp, $isHasFileAppPermission) == false)
                             return false;
                     } else {
                         return false;
@@ -406,14 +423,14 @@
                         if ($entry != '.' && $entry != '..') {
                             $filename = $path . SP . $entry;
 
-                            if (self::permissionDenyPath($filename)) {
+                            if ($isCheckPermissionApp && self::permissionDenyPath($filename)) {
                                 $isHasFileAppPermission        = true;
                                 $directoryCurrentHasPermission = true;
                             } else if (self::isTypeFile($filename)) {
                                 if (self::unlink($filename) == false)
                                     return false;
                             } else if (self::isTypeDirectory($filename)) {
-                                if (self::rrmdir($filename, null, $isHasFileAppPermission) == false)
+                                if (self::rrmdir($filename, null, $isCheckPermissionApp, $isHasFileAppPermission) == false)
                                     return false;
                             } else {
                                 return false;
@@ -424,11 +441,16 @@
                     if ($directoryCurrentHasPermission)
                         return true;
 
-                    return @rmdir($path);
+                    return self::rmdir($path);
                 }
             }
 
             return false;
+        }
+
+        public static function rrmdirSystem($path, $directory = null, &$isHasFileAppPermission = false)
+        {
+            return self::rrmdir($path, $directory, $isHasFileAppPermission, false);
         }
 
         public static function sizeToString($size)
@@ -452,7 +474,7 @@
             return @unlink($path);
         }
 
-        public static function validate($path, $isPathZIP = false)
+        public static function filterPaths($path, $isPathZIP = false)
         {
             $SP = SP;
 
@@ -497,7 +519,7 @@
                     $sp = SP . SP;
 
                 $path = strtolower($path);
-                $path = self::validate($path);
+                $path = self::filterPaths($path);
 
                 if ($isUseName)
                     $reg = env('application.directory');
@@ -507,7 +529,7 @@
                 if ($reg != null)
                     $reg = strtolower($reg);
 
-                $reg = self::validate($reg);
+                $reg = self::filterPaths($reg);
 
                 if (SP == '\\')
                     $reg = str_replace(SP, $sp, $reg);
@@ -666,6 +688,11 @@
             return @fgets($handle, $length);
         }
 
+        public static function fileReadsToArray($filename, $flag = 0, $context = null)
+        {
+            return @file($filename, $flag, $context);
+        }
+
         public static function fileMTime($path)
         {
             return @filemtime($path);
@@ -679,6 +706,102 @@
         public static function fileGroup($path)
         {
             return @filegroup($path);
+        }
+
+        public static function listContent(
+            $path,
+            $pathRemove              = null,
+            $isGetSize               = false,
+            $isGetChmodRWX           = false,
+            $prefixKeyDirectoryArray = null,
+            $prefixKeyFileArray      = null,
+            $parentNotModify         = null,
+            &$entryNotModify         = null
+        ) {
+            if (is_array($entryNotModify) == false)
+                $entryNotModify = array();
+
+            if (self::isTypeDirectory($path)) {
+                if ($parentNotModify == null) {
+                    $parentNotModify = $path;
+
+                    if ($pathRemove !== null)
+                        $pathRemove = self::filterPaths($pathRemove);
+                }
+
+                if ($path !== $parentNotModify) {
+                    $pathDirectory = $path;
+
+                    if ($pathRemove !== null && strpos($path, $pathRemove) === 0)
+                        $pathDirectory = substr($path, strlen($pathRemove) + 1);
+
+                    $array = [
+                        'filepath'      => $pathDirectory,
+                        'filename'      => basename($path),
+                        'filesize'      => 0,
+                        'is_directory'  => true,
+                        'is_readable'   => $isGetChmodRWX ? self::isReadable($path)   : null,
+                        'is_writable'   => $isGetChmodRWX ? self::isWriteable($path)  : null,
+                        'is_executable' => $isGetChmodRWX ? self::isExecutable($path) : null
+                    ];
+
+                    if ($prefixKeyDirectoryArray !== null)
+                        $entryNotModify[$prefixKeyDirectoryArray . $array['filepath']] = $array;
+                    else
+                        $entryNotModify[] = $array;
+                }
+
+                $handleScan = self::scanDirectory($path);
+
+                if ($handleScan === false)
+                    return false;
+
+                foreach ($handleScan AS $filename) {
+                    if ($filename != '.' && $filename != '..' && $filename != '.git') {
+                        $filepath = self::filterPaths($path . SP . $filename);
+
+                        if (self::isTypeDirectory($filepath)) {
+                            if (self::listContent(
+                                $filepath,
+                                $pathRemove,
+                                $isGetSize,
+                                $isGetChmodRWX,
+                                $prefixKeyDirectoryArray,
+                                $prefixKeyFileArray,
+                                $parentNotModify,
+                                $entryNotModify
+                            ) == false) {
+                                return false;
+                            }
+                        } else {
+                            $entrypath = $filepath;
+
+                            if ($pathRemove !== null && strpos($entrypath, $pathRemove) === 0)
+                                $entrypath = substr($entrypath, strlen($pathRemove) + 1);
+
+                            $array = [
+                                'filepath'      => $entrypath,
+                                'filename'      => basename($filepath),
+                                'filesize'      => $isGetSize ? self::fileSize($filepath) : 0,
+                                'is_directory'  => false,
+                                'is_readable'   => $isGetChmodRWX ? self::isReadable($filepath)   : null,
+                                'is_writable'   => $isGetChmodRWX ? self::isWriteable($filepath)  : null,
+                                'is_executable' => $isGetChmodRWX ? self::isExecutable($filepath) : null
+                            ];
+
+                            if ($prefixKeyFileArray !== null)
+                                $entryNotModify[$prefixKeyFileArray . $array['filepath']] = $array;
+                            else
+                                $entryNotModify[] = $array;
+                        }
+                    }
+                }
+            }
+
+            if ($path == $parentNotModify)
+                return $entryNotModify;
+            else
+                return true;
         }
 
 	}

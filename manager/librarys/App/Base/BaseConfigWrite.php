@@ -2,6 +2,9 @@
 
     namespace Librarys\App\Base;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\File\FileInfo;
 
     abstract class BaseConfigWrite
@@ -73,6 +76,8 @@
                 $this->sortArray($config);
 
                 $this->buffer  = '<?php' . "\n\n";
+                $this->buffer .= $this->spacing . 'if (defined(\'LOADED\') == false)' . "\n";
+                $this->buffer .= $this->spacing . $this->spacing . 'exit;' . "\n\n";
                 $this->buffer .= $this->spacing . 'return [' . "\n";
 
                 foreach ($config AS $key => $entry)

@@ -9,9 +9,6 @@
     define('LOADED', 1);
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     if ($appDirectory->isFileExistsDirectorySeparatorName() == false)
         $appAlert->danger(lng('home.alert.path_not_exists'), ALERT_INDEX, env('app.http.host'));
     else if ($appDirectory->isPermissionDenyPath($appDirectory->getDirectory()))
@@ -35,13 +32,13 @@
     else
         $title = lng('file_chmod.title_page_file');
 
-    $themes  = [ env('resource.theme.file') ];
-    $scripts = [ env('resource.javascript.chmod_input') ];
+    $themes  = [ env('resource.filename.theme.file') ];
+    $scripts = [ env('resource.filename.javascript.chmod_input') ];
     $appAlert->setID(ALERT_FILE_CHMOD);
     require_once('incfiles' . SP . 'header.php');
 
     $forms = [
-        'chmod' => FileInfo::chmod(FileInfo::validate($appDirectory->getDirectory() . SP . $appDirectory->getName()))
+        'chmod' => FileInfo::chmod(FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appDirectory->getName()))
     ];
 
     if (isset($_POST['chmod'])) {
@@ -53,7 +50,7 @@
             else
                 $appAlert->danger(lng('file_chmod.alert.not_input_chmod_permission_file'));
         } else {
-            if (FileInfo::chmod(FileInfo::validate($appDirectory->getDirectory() . SP . $appDirectory->getName()), intval($forms['chmod'], 8)) == false) {
+            if (FileInfo::chmod(FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appDirectory->getName()), intval($forms['chmod'], 8)) == false) {
                 if ($isDirectory)
                     $appAlert->danger(lng('file_chmod.alert.chmod_permission_directory_failed', 'filename', $appDirectory->getName()));
                 else

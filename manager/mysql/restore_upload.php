@@ -14,14 +14,12 @@
 
     require_once('global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, env('app.http.host') . '/user/login.php');
-    else if ($appMysqlConfig->get('mysql_name') != null)
+    if ($appMysqlConfig->get('mysql_name') != null)
         $appAlert->danger(lng('mysql.list_database.alert.mysql_is_not_connect_root', 'name', $appMysqlConnect->getName()), ALERT_MYSQL_LIST_DATABASE, 'list_database.php');
 
     $title   = lng('mysql.restore_upload.title_page');
-    $themes  = [ env('resource.theme.mysql') ];
-    $scripts = [ env('resource.javascript.custom_input_file') ];
+    $themes  = [ env('resource.filename.theme.mysql') ];
+    $scripts = [ env('resource.filename.javascript.custom_input_file') ];
     $appAlert->setID(ALERT_MYSQL_RESTORE_UPLOAD);
     require_once(ROOT . 'incfiles' . SP . 'header.php');
     requireDefine('mysql_restore_manager');
@@ -67,12 +65,12 @@
                 $fileRename = null;
                 $pathRename = null;
                 $nameStore  = FileInfo::fileNameFix($nameStore);
-                $pathStore  = FileInfo::validate($databaseBackupRestore->getPathFileDatabaseBackup($nameStore));
+                $pathStore  = FileInfo::filterPaths($databaseBackupRestore->getPathFileDatabaseBackup($nameStore));
 
                 if (FileInfo::fileExists($pathStore)) {
                     for ($i = 0; $i < 50; ++$i) {
                         $fileRename = rand(10000, 99999) . '_' . $nameStore;
-                        $pathRename = FileInfo::validate($databaseBackupRestore->getPathFileDatabaseBackup($fileRename));
+                        $pathRename = FileInfo::filterPaths($databaseBackupRestore->getPathFileDatabaseBackup($fileRename));
 
                         if (FileInfo::fileExists($pathRename) == false) {
                             break;

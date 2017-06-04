@@ -14,9 +14,6 @@
 
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     if ($appDirectory->isFileSeparatorNameExists() == false)
         $appAlert->danger(lng('home.alert.path_not_exists'), ALERT_INDEX, env('app.http.host'));
     else if ($appDirectory->isPermissionDenyPath())
@@ -46,12 +43,12 @@
     }
 
     $title   = lng('file_viewzip.title_page');
-    $themes  = [ env('resource.theme.file') ];
+    $themes  = [ env('resource.filename.theme.file') ];
     $appAlert->setID(ALERT_FILE_VIEWZIP);
     require_once('incfiles' . SP . 'header.php');
 
 
-    $pclZip = new PclZip(FileInfo::validate($appDirectory->getDirectoryAndName()));
+    $pclZip = new PclZip(FileInfo::filterPaths($appDirectory->getDirectoryAndName()));
     $pclZipListContent = $pclZip->listContent();
     $pclZipSeparator   = '/';
 
@@ -61,7 +58,7 @@
     $pclZipCountArrayEntry = 0;
 
     if (isset($_GET[PARAMETER_ZIP_PATH]) && empty($_GET[PARAMETER_ZIP_PATH]) == false) {
-        $pclZipDirectoryOrigin = separator(FileInfo::validate(AppDirectory::rawDecode($_GET[PARAMETER_ZIP_PATH])), $pclZipSeparator);
+        $pclZipDirectoryOrigin = separator(FileInfo::filterPaths(AppDirectory::rawDecode($_GET[PARAMETER_ZIP_PATH])), $pclZipSeparator);
         $pclZipDirectory       = separator($pclZipDirectoryOrigin . $pclZipSeparator, $pclZipSeparator);
     }
 

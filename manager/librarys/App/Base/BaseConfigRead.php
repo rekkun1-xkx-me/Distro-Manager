@@ -2,6 +2,9 @@
 
     namespace Librarys\App\Base;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Boot;
     use Librarys\App\AppUser;
     use Librarys\File\FileInfo;
@@ -77,9 +80,24 @@
             return $this->configSystemArray;
         }
 
-        public function execute(AppUser $appUser)
+        public function hasEntryConfigArray()
         {
-            if ($appUser->isLogin()) {
+            return is_array($this->configArray) && count($this->configArray) > 0;
+        }
+
+        public function hasEntryConfigArraySystem()
+        {
+            return is_array($this->configSystemArray) && count($this->configSystemArray) > 0;
+        }
+
+        public function hasEntryConfigArrayAny()
+        {
+            return $this->hasEntryConfigArray() || $this->hasEntryConfigArraySystem();
+        }
+
+        public function execute($appUser = null)
+        {
+            if ($appUser != null && $appUser->isLogin()) {
                 $username  = $appUser->get('username');
                 $directory = env('app.path.user');
                 $isMkdir   = true;
@@ -120,7 +138,7 @@
             } else {
                 $path = $this->pathConfigSystem;
 
-                if (is_null($path) && FileInfo::isTypeFile($path) == false)
+                if (is_null($path) || FileInfo::isTypeFile($path) == false)
                     return;
             }
 
@@ -136,7 +154,7 @@
                 $this->configArray = array();
         }
 
-        public function set($name, $value)
+        public function set($name, $value, $systemWrite = false)
         {
             if ($name == null)
                 return false;
@@ -148,8 +166,13 @@
             else
                 $nameSplits = explode('.', $name);
 
-            $configArray     = &$this->configArray;
+            $configArray     = null;
             $nameSplitsCount = count($nameSplits);
+
+            if ($systemWrite)
+                $configArray = &$this->configSystemArray;
+            else
+                $configArray = &$this->configArray;
 
             for ($i = 0; $i < $nameSplitsCount; ++$i) {
                 $nameEntry = $nameSplits[$i];
@@ -168,6 +191,11 @@
                 $this->receiverToCache($name);
 
             return true;
+        }
+
+        public function setSystem($name, $value)
+        {
+            return $this->set($name, $value, true);
         }
 
         public function get($name, $default = null, $recache = false)

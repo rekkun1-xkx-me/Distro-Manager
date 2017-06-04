@@ -30,6 +30,7 @@ input:invalid {
 }
 
 input[type=text],
+input[type=email],
 input[type=number],
 input[type=password],
 input[type=file] + label,
@@ -49,8 +50,24 @@ select {
     border-bottom: 2px solid #e0e0e0;
     padding: 10px;
     width: 100%;
-    height: 45px;
+    height: 50px;
+    line-height: 50px;
     outline: 0;
+}
+
+textarea {
+    line-height: 22px;
+}
+
+input[type=text]:disabled,
+input[type=email]:disabled,
+input[type=number]:disabled,
+input[type=password]:disabled,
+input[type=file]:disabled + label,
+
+textarea:disabled,
+select:disabled {
+    background-color: #f0f0f0;
 }
 
 input[type=file] + label {
@@ -58,6 +75,7 @@ input[type=file] + label {
 }
 
 input[type=text],
+input[type=email],
 input[type=number],
 input[type=password],
 
@@ -126,19 +144,40 @@ input[type=file] + label {
     white-space: nowrap;
 }
 
-input[type=text]:hover,
-input[type=text]:focus,
-input[type=number]:hover,
-input[type=number]:focus,
-input[type=password]:hover,
-input[type=password]:focus,
-input[type=file] + label:hover,
-input[type=file] + label:focus,
+input[type=text]:disabled,
+input[type=text]:disabled,
+input[type=email]:disabled,
+input[type=email]:disabled,
+input[type=number]:disabled,
+input[type=number]:disabled,
+input[type=password]:disabled,
+input[type=password]:disabled,
+input[type=file]:disabled + label,
+input[type=file]:disabled + label,
 
-textarea:hover,
-textarea:focus,
-select:hover,
-select:focus,
+textarea:disabled,
+textarea:disabled,
+select:disabled,
+select:disabled {
+    color: #707070;
+    border-bottom-color: #c0c0c0;
+}
+
+input[type=text]:enabled:hover,
+input[type=text]:enabled:focus,
+input[type=email]:enabled:hover,
+input[type=email]:enabled:focus,
+input[type=number]:enabled:hover,
+input[type=number]:enabled:focus,
+input[type=password]:enabled:hover,
+input[type=password]:enabled:focus,
+input[type=file]:enabled + label:hover,
+input[type=file]:enabled + label:focus,
+
+textarea:enabled:hover,
+textarea:enabled:focus,
+select:enabled:hover,
+select:enabled:focus,
 
 div.select:hover::before,
 div.select:focus::before {
@@ -146,75 +185,83 @@ div.select:focus::before {
     border-bottom-color: #a0a0a0;
 }
 
-input:not(.none):invalid,
-input:not(.none):invalid:hover,
-input:not(.none):invalid:focus {
+input:enabled:not(.none):invalid,
+input:enabled:not(.none):invalid:hover,
+input:enabled:not(.none):invalid:focus {
     color: #ef5350;
     border-bottom-color: #ef5350;
 }
 
-input[type=text].danger:hover,
-input[type=text].danger:focus,
-input[type=number].danger:hover,
-input[type=number].danger:focus,
-input[type=password].danger:hover,
-input[type=password].danger:focus,
+input[type=text].danger:enabled:hover,
+input[type=text].danger:enabled:focus,
+input[type=email].danger:enabled:hover,
+input[type=email].danger:enabled:focus,
+input[type=number].danger:enabled:hover,
+input[type=number].danger:enabled:focus,
+input[type=password].danger:enabled:hover,
+input[type=password].danger:enabled:focus,
 
-textarea.danger:hover,
-textarea.danger:focus,
-select.danger:hover,
-select.danger:focus,
+textarea.danger:enabled:hover,
+textarea.danger:enabled:focus,
+select.danger:enabled:hover,
+select.danger:enabled:focus,
 
 div.select.danger:hover::before,
 div.select.danger:focus::before {
     border-bottom-color: #ef5350;
 }
 
-input[type=text].success:hover,
-input[type=text].success:focus,
-input[type=number].success:hover,
-input[type=number].success:focus,
-input[type=password].success:hover,
-input[type=password].success:focus,
+input[type=text].success:enabled:hover,
+input[type=text].success:enabled:focus,
+input[type=email].success:enabled:hover,
+input[type=email].success:enabled:focus,
+input[type=number].success:enabled:hover,
+input[type=number].success:enabled:focus,
+input[type=password].success:enabled:hover,
+input[type=password].success:enabled:focus,
 
-textarea.success:hover,
-textarea.success:focus,
-select.success:hover,
-select.success:focus,
+textarea.success:enabled:hover,
+textarea.success:enabled:focus,
+select.success:enabled:hover,
+select.success:enabled:focus,
 
 div.select.success:hover::before,
 div.select.success:focus::before {
     border-bottom-color: #66bb6a;
 }
 
-input[type=text].info:hover,
-input[type=text].info:focus,
-input[type=number].info:hover,
-input[type=number].info:focus,
-input[type=password].info:hover,
-input[type=password].info:focus,
+input[type=text].info:enabled:hover,
+input[type=text].info:enabled:focus,
+input[type=email].info:enabled:hover,
+input[type=email].info:enabled:focus,
+input[type=number].info:enabled:hover,
+input[type=number].info:enabled:focus,
+input[type=password].info:enabled:hover,
+input[type=password].info:enabled:focus,
 
-textarea.info:hover,
-textarea.info:focus,
-select.info:hover,
-select.info:focus,
+textarea.info:enabled:hover,
+textarea.info:enabled:focus,
+select.info:enabled:hover,
+select.info:enabled:focus,
 
 div.select.info:hover::before,
 div.select.info:focus::before {
     border-bottom-color: #42a5f5;
 }
 
-input[type=text].warning:hover,
-input[type=text].warning:focus,
-input[type=number].warning:hover,
-input[type=number].warning:focus,
-input[type=password].warning:hover,
-input[type=password].warning:focus,
+input[type=text].warning:enabled:hover,
+input[type=text].warning:enabled:focus,
+input[type=email].warning:enabled:hover,
+input[type=email].warning:enabled:focus,
+input[type=number].warning:enabled:hover,
+input[type=number].warning:enabled:focus,
+input[type=password].warning:enabled:hover,
+input[type=password].warning:enabled:focus,
 
-textarea.warning:hover,
-textarea.warning:focus,
-select.warning:hover,
-select.warning:focus,
+textarea.warning:enabled:hover,
+textarea.warning:enabled:focus,
+select.warning:enabled:hover,
+select.warning:enabled:focus,
 
 div.select.warning:hover::before,
 div.select.warning:focus::before {
@@ -223,7 +270,7 @@ div.select.warning:focus::before {
 
 input[type=checkbox]:not(.none),
 input[type=radio].radio-entry-list {
-	display: none;
+    display: none;
 }
 
 input[type=checkbox] + label.not-content {
@@ -235,16 +282,16 @@ input[type=checkbox] + label.not-content {
 
 input[type=checkbox] + label::before,
 input[type=radio].radio-entry-list + label::before {
-	color: #a0a0a0;
+    color: #a0a0a0;
     content: "\e927";
-	display: inline-block;
-	font-size: 20px;
-	line-height: 20px;
-	width: 20px;
-	height: 20px;
-	text-align: center;
-	text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.2);
-	vertical-align: middle;
+    display: inline-block;
+    font-size: 20px;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.2);
+    vertical-align: middle;
 }
 
 input[type=checkbox]:hover + label::before,
@@ -258,7 +305,7 @@ input[type=radio].radio-entry-list + label::before {
 
 input[type=checkbox]:checked + label::before,
 input[type=radio].radio-entry-list:checked + label::before {
-	color: #00a99b;
+    color: #00a99b;
     content: "\e928";
 }
 
@@ -273,17 +320,17 @@ input[type=radio].radio-entry-list:checked:hover + label::before {
 
 input[type=checkbox]:disabled + label::before,
 input[type=radio].radio-entry-list:disabled + label::before {
-	color: #c0c0c0;
-	background-color: #eaeaea;
+    color: #c0c0c0;
+    background-color: #eaeaea;
 }
 
 input[type=checkbox] + label span,
 input[type=radio].radio-entry-list + label span {
-	color: #707070;
-	margin-left: 5px;
-	line-height: 15px;
-	font-size: 15px;
-	vertical-align: middle;
+    color: #707070;
+    margin-left: 5px;
+    line-height: 15px;
+    font-size: 15px;
+    vertical-align: middle;
 }
 
 input[type=checkbox]:hover + label span,
@@ -293,7 +340,7 @@ input[type=radio].radio-entry-list:hover + label span {
 
 input[type=checkbox]:checked + label span,
 input[type=radio].radio-entry-list:checked + label span {
-	color: #505050;
+    color: #505050;
 }
 
 input[type=checkbox]:checked:hover + label span,
@@ -303,7 +350,7 @@ input[type=radio].radio-entry-list:checked:hover + label span {
 
 input[type=checkbox]:disabled + label span,
 input[type=radio].radio-entry-list:disabled + label span {
-	color: #a0a0a0;
+    color: #a0a0a0;
 }
 
 input::-webkit-input-placeholder {
@@ -419,7 +466,7 @@ ul.radio-choose-tab > li input:enabled:checked + label:hover {
     background-color: #00897b;
 }
 
-ul.radio-choose-tab > li input + label:enabled:hover {
+ul.radio-choose-tab > li input:enabled + label:hover {
     background-color: #e0e0e0;
 }
 
@@ -434,25 +481,24 @@ ul.radio-choose-tab > li input + label:enabled:hover span {
 
 div#container {
     margin: 0 auto;
-    max-width: 780px;
+    max-width: 960px;
     padding: 0;
-    position: relative;
 }
 
 div#header {
     background-color: #00897b;
 
-    -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-       -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-        -ms-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-         -o-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+       -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        -ms-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+         -o-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    max-width: 780px;
+    max-width: 1070px;
     height: 55px;
     margin: 0 auto;
     padding: 0;
@@ -570,10 +616,14 @@ div#footer {
     left: 0;
     right: 0;
     margin: 0 auto;
-    margin-top: 50px;
-    max-width: 150px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    max-width: 200px;
     padding: 15px;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 div#footer::after {
@@ -586,9 +636,10 @@ div#footer::after {
     height: 1px;
 }
 
+div#footer,
 div#footer span {
     color: #c0c0c0;
-    font-size: 13px;
+    font-size: 14px;
     text-shadow: 1px 1px #ffffff;
 }
 
@@ -609,20 +660,20 @@ ul.alert li {
 }
 
 ul.alert {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 ul.alert li {
     font-size: 14px;
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
-    padding: 12px;
+    padding: 14px;
     margin: 0;
     margin-bottom: 8px;
     word-wrap: break-word;
@@ -682,12 +733,13 @@ ul.menu-action li {
 ul.menu-action {
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
+    margin-top: 15px;
     margin-bottom: 15px;
 }
 
@@ -698,8 +750,10 @@ ul.menu-action li {
          -o-box-sizing: border-box;
             box-sizing: border-box;
 
-    padding: 10px;
+    height: 45px;
     width: 50%;
+    padding-left: 10px;
+    padding-right: 10px;
     float: left;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -724,6 +778,7 @@ ul.menu-action li a span.icomoon {
 
 ul.menu-action li a span {
     color: #505050;
+    line-height: 45px;
     vertical-align: middle;
 }
 
@@ -731,7 +786,7 @@ ul.menu-action li a:hover span,
 ul.menu-action li a:hover strong,
 ul.menu-action li a:focus span,
 ul.menu-action li a:focus strong {
-    color:  #909090;
+    color:  #707070;
     vertical-align: middle;
 }
 
@@ -747,11 +802,11 @@ ul.paging {
     background-color: transparent;
     display: block;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
     margin-bottom: 15px;
     width: 100%;
@@ -794,11 +849,11 @@ ul.paging li.jump a:hover span {
 div.form-action {
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
     margin-bottom: 15px;
 }
@@ -945,12 +1000,12 @@ div.form-action ul.form-element > li.input-chmod input[type=checkbox] {
 
 div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label::after,
 div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label::before {
-	content: " ";
-	background-color: transparent;
-	border: 0;
-	margin: 0;
-	padding: 0;
-	line-heiht: auto;
+    content: " ";
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    line-height: auto;
 }
 
 div.form-action ul.form-element > li.input-chmod ul li span {
@@ -987,12 +1042,12 @@ div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label sp
 }
 
 div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label span.icomoon + span {
-	margin-left: 2px;
+    margin-left: 2px;
 }
 
 div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label span.icomoon {
-	margin-left: 0;
-	margin-right: 2px;
+    margin-left: 0;
+    margin-right: 2px;
 }
 
 div.form-action ul.form-element > li.input-chmod input[type=checkbox] + label:hover span {
@@ -1023,7 +1078,7 @@ div.form-action ul.form-element > li.radio-choose > span:first-child {
     display:block;
     font-size: 14px;
     font-weight: normal;
-    margin-bottom:10px;
+    margin-bottom: 10px;
 }
 
 div.form-action ul.form-element > li.paging ul.paging {
@@ -1040,16 +1095,16 @@ div.form-action ul.form-element > li.checkbox ul,
 div.form-action ul.form-element > li.radio ul,
 div.form-action ul.form-element > li.checkbox ul li,
 div.form-action ul.form-element > li.radio ul li {
-	display: block;
-	list-style: none;
-	margin: 0;
-	padding: 0;
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 div.form-action ul.form-element > li.checkbox ul li,
 div.form-action ul.form-element > li.radio ul li {
-	padding-top: 4px;
-	padding-bottom: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 div.form-action ul.form-element > li.accept span {
@@ -1081,9 +1136,9 @@ li.button-action-box button {
     display: inline-block;
     border: 0;
     margin: 0;
+    padding: 0;
     height: 30px;
     margin-right: 15px;
-    padding: 0;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -1128,7 +1183,6 @@ div.button-action-box > a span,
 li.button-action-box > a span {
     color: #404040;
     font-weight: normal;
-    font-variant: normal;
     font-size: 14px;
     line-height: 30px;
 }
@@ -1137,6 +1191,12 @@ div.form-action ul.form-element > li.button > a:hover span,
 div.button-action-box > a:hover span,
 li.button-action-box > a:hover span {
     color: #00897b;
+}
+
+div.form-action ul.form-element > li.button.center,
+div.button-action-box.center,
+li.button-action-box.center {
+    text-align: center;
 }
 
 ul.action-multi,
@@ -1152,11 +1212,11 @@ ul.action-multi li {
 ul.action-multi {
     background-color: #ffffff;
 
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+       -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+        -ms-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+         -o-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
 
     margin-bottom: 15px;
 }

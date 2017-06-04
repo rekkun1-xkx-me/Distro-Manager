@@ -1,5 +1,8 @@
 <?php
 
+    if (defined('LOADED') == false)
+        exit;
+
     return [
         'server' => [
             'document_root' => dirname(dirname(dirname(__DIR__))),
@@ -8,13 +11,14 @@
         'app' => [
             'sleep_time_redirect' => 3,
 
+            'server_app' => [
+                'localhost',
+                'izerocs.net',
+                'izerocs.ga'
+            ],
+
             'dev' => [
-                'enable'       => true,
-                'compress_css' => true,
-                'compress_js'  => true,
-                'cache_css'    => 86400,
-                'cache_js'     => 86400,
-                'rand'         => 'generatorDevRandResource',
+                'enable' => true
             ],
 
             'date' => [
@@ -36,22 +40,23 @@
             ],
 
             'path' => [
-                'root'         => dirname(dirname(__DIR__)),
-                'librarys'     => '${app.path.root}${SP}librarys',
-                'resource'     => '${app.path.root}${SP}assets',
-                'error'        => '${app.path.resource}${SP}error',
-                'theme'        => '${app.path.resource}${SP}theme',
-                'icon'         => '${app.path.resource}${SP}icon',
-                'javascript'   => '${app.path.resource}${SP}javascript',
-                'template'     => '${app.path.resource}${SP}template',
-                'lang'         => '${app.path.resource}${SP}language',
-                'user'         => '${app.path.resource}${SP}user',
-                'config'       => '${app.path.resource}${SP}config',
-                'define'       => '${app.path.resource}${SP}define',
-                'cache'        => '${app.path.resource}${SP}cache',
-                'tmp'          => '${app.path.resource}${SP}tmp',
-                'backup'       => '${app.path.resource}${SP}backup',
-                'backup_mysql' => '${app.path.backup}${SP}mysql'
+                'root'            => dirname(dirname(__DIR__)),
+                'librarys'        => '${app.path.root}${SP}librarys',
+                'resource'        => '${app.path.root}${SP}assets',
+                'theme'           => '${app.path.resource}${SP}theme',
+                'icon'            => '${app.path.resource}${SP}icon',
+                'javascript'      => '${app.path.resource}${SP}javascript',
+                'lang'            => '${app.path.resource}${SP}language',
+                'user'            => '${app.path.resource}${SP}user',
+                'token'           => '${app.path.resource}${SP}token',
+                'config'          => '${app.path.resource}${SP}config',
+                'define'          => '${app.path.resource}${SP}define',
+                'cache'           => '${app.path.resource}${SP}cache',
+                'tmp'             => '${app.path.resource}${SP}tmp',
+                'backup'          => '${app.path.resource}${SP}backup',
+                'upgrade'         => '${app.path.resource}${SP}upgrade',
+                'backup_mysql'    => '${app.path.backup}${SP}mysql',
+                'data_javascript' => '${app.path.javascript}${SP}minify'
             ],
 
             'http' => [
@@ -62,34 +67,6 @@
                 'path'   => '${app.path.resource}${SP}language',
                 'mime'   => '.php',
                 'locale' => 'vi'
-            ],
-
-            'tmp' => [
-                'lifetime' => 180,
-                'limit'    => 20
-            ],
-
-            'firewall' => [
-                'path'            => '${app.path.resource}${SP}firewall',
-                'path_htaccess'   => '${app.path.root}${SP}.htaccess',
-                'email'           => 'Izero.Cs@gmail.com',
-                'enable'          => false,
-                'enable_htaccess' => true,
-
-                'time' => [
-                    'request' => 1,
-                    'small'   => 10,
-                    'medium'  => 120,
-                    'large'   => 3600
-                ],
-
-                'lock_count' => [
-                    'small'    => 5,
-                    'medium'   => 10,
-                    'large'    => 15,
-                    'forever'  => 20,
-                    'htaccess' => 25
-                ]
             ],
 
             'cfsr' => [
@@ -103,67 +80,68 @@
             ],
 
             'login' => [
-                'session_login_name' => 'LOGIN_MANAGER',
-                'session_token_name' => 'LOGIN_TOKEN_MANAGER'
+                'session_login_name'          => 'LOGIN_MANAGER',
+                'session_token_name'          => 'LOGIN_TOKEN_MANAGER',
+                'session_check_password_name' => 'LOGIN_CHECK_PASSWORD_MANAGER'
             ]
-        ],
-
-        'error' => [
-            'reporting' => E_ALL | E_STRICT,
-            'mime'      => '.php',
-            'theme'     => '${resource.theme.default}',
-
-            'handler'   => 'handler',
-            'not_found' => 'not_found',
-            'firewall'  => 'firewall'
         ],
 
         'resource' => [
             'config' => [
-                'about'            => '${app.path.config}${SP}about.php',
-                'manager'          => '${app.path.config}${SP}manager.php',
-                'manager_disabled' => '${app.path.config}${SP}manager_disabled.php',
-                'user'             => '${app.path.config}${SP}user.php',
-                'mysql'            => '${app.path.config}${SP}mysql.php'
+                'about'       => '${app.path.config}${SP}about.php',
+                'manager'     => '${app.path.config}${SP}manager.php',
+                'manager_dis' => '${app.path.config}${SP}manager_dis.php',
+                'user'        => '${app.path.config}${SP}user.php',
+                'mysql'       => '${app.path.config}${SP}mysql.php',
+                'upgrade'     => '${app.path.config}${SP}upgrade.php'
             ],
 
             'define' => [
                 'alert' => '${app.path.define}${SP}alert.php'
             ],
 
-            'javascript' => [
-                'on_load'                   => '${app.http.javascript}/on_load.js',
-                'custom_input_file'         => '${app.http.javascript}/custom_input_file.js',
-                'more_input_url'            => '${app.http.javascript}/more_input_url.js',
-                'chmod_input'               => '${app.http.javascript}/chmod_input.js',
-                'button_save_on_javascript' => '${app.http.javascript}/button_save_on_javascript.js',
-                'auto_focus_input_last'     => '${app.http.javascript}/auto_focus_input_last.js',
-                'checkbox_checkall'         => '${app.http.javascript}/checkbox_checkall.js'
+            'filename' => [
+                'theme' => [
+                    'app'     => 'theme.css',
+                    'about'   => 'about.css',
+                    'login'   => 'login.css',
+                    'file'    => 'file.css',
+                    'mysql'   => 'mysql.css',
+                    'icomoon' => 'style.css'
+                ],
+
+                'javascript' => [
+                    'onload'                    => 'onload.js',
+                    'custom_input_file'         => 'custom_input_file.js',
+                    'more_input_url'            => 'more_input_url.js',
+                    'chmod_input'               => 'chmod_input.js',
+                    'button_save_on_javascript' => 'button_save_on_javascript.js',
+                    'auto_focus_input_last'     => 'auto_focus_input_last.js',
+                    'checkbox_checkall'         => 'checkbox_checkall.js'
+                ],
+
+                'icon' => [
+                    'favicon_ico' => 'icon.ico',
+                    'favicon_png' => 'icon.png'
+                ],
+
+                'config' => [
+                    'about'          => 'about.php',
+                    'manager'        => 'manager.php',
+                    'user'           => 'user.php',
+                    'user_token'     => 'token.php',
+                    'mysql'          => 'mysql.php',
+                    'upgrade'        => 'upgrade.php',
+                    'env_theme'      => 'env.php',
+                    'env_javascript' => 'env.php'
+                ]
             ],
 
             'theme' => [
                 'path' => [
-                        'default' => '${app.http.theme}/default'
-                ],
-
-                'app'     => '${app.http.theme}/default/theme.css',
-                'about'   => '${app.http.theme}/default/about.css',
-                'login'   => '${app.http.theme}/default/login.css',
-                'file'    => '${app.http.theme}/default/file.css',
-                'mysql'   => '${app.http.theme}/default/mysql.css',
-                'icomoon' => '${app.http.theme}/default/style.css'
-            ],
-
-            'icon' => [
-                'favicon_ico' => '${app.http.theme}/default/icon/icon.ico',
-                'favicon_png' => '${app.http.theme}/default/icon/icon.png'
+                    'default' => '${app.http.theme}/default'
+                ]
             ]
-        ],
-
-        'config_file_name' => [
-        	'about'   => 'about.php',
-            'manager' => 'manager.php',
-            'mysql'   => 'mysql.php'
         ]
     ];
 

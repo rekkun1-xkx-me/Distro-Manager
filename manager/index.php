@@ -13,12 +13,9 @@
     require_once('incfiles' . DIRECTORY_SEPARATOR . 'global.php');
     requireDefine('file_action');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, 'user/login.php');
-
     $title   = lng('home.title_page_root');
-    $themes  = [ env('resource.theme.file') ];
-    $scripts = [ env('resource.javascript.checkbox_checkall') ];
+    $themes  = [ env('resource.filename.theme.file') ];
+    $scripts = [ env('resource.filename.javascript.checkbox_checkall') ];
     $appAlert->setID(ALERT_INDEX);
 
     require_once('incfiles' . SP . 'header.php');
@@ -113,7 +110,7 @@
 
     $bufferBack = null;
 
-    if (preg_replace('|[a-zA-Z]+:|', '', FileInfo::validate($appDirectory->getDirectory())) != SP) {
+    if (preg_replace('|[a-zA-Z]+:|', '', FileInfo::filterPaths($appDirectory->getDirectory())) != SP) {
         $backPath      = strrchr($appDirectory->getDirectory(), SP);
         $backDirectory = $backPath;
 
@@ -151,7 +148,7 @@
     $appFileCopy = new AppFileCopy();
 
     if ($appFileCopy->isSession()) {
-        $isDirectoryCopy         = FileInfo::isTypeDirectory(FileInfo::validate($appFileCopy->getDirectory() . SP . $appFileCopy->getName()));
+        $isDirectoryCopy         = FileInfo::isTypeDirectory(FileInfo::filterPaths($appFileCopy->getDirectory() . SP . $appFileCopy->getName()));
         $isDirectoryCurrentEqual = false;
 
         if (isset($_GET['cancel_copy_move'])) {
@@ -193,7 +190,7 @@
         $appFileCopyHrefParamater->add(AppDirectory::PARAMETER_NAME_URL,      $appFileCopy->getName(),      true);
         $appFileCopyHref = 'file_copy.php' . $appFileCopyHrefParamater->toString(true);
 
-        if (FileInfo::validate($appDirectory->getDirectory() . SP . $appFileCopy->getName()) == FileInfo::validate($appFileCopy->getDirectory() . SP . $appFileCopy->getName())) {
+        if (FileInfo::filterPaths($appDirectory->getDirectory() . SP . $appFileCopy->getName()) == FileInfo::filterPaths($appFileCopy->getDirectory() . SP . $appFileCopy->getName())) {
             if ($appFileCopy->isMove() == false)
                 $appAlert->danger(lng('file_copy.alert.path_copy_is_equal_path_current'));
             else
@@ -268,7 +265,6 @@
         $appFileCopy->setPath($appDirectory->getDirectory());
         $appFileCopy->flushSession();
     }
-
 ?>
 
     <?php echo $appAlert->display(); ?>
@@ -283,7 +279,7 @@
             <?php if ($handlerCount > 0) { ?>
                 <?php for ($i = $handlerPage['begin']; $i < $handlerPage['end']; ++$i) { ?>
                     <?php $entry        = $handlerList[$i]; ?>
-                    <?php $entryPath    = FileInfo::validate($appDirectory->getDirectory() . SP . $entry['name']); ?>
+                    <?php $entryPath    = FileInfo::filterPaths($appDirectory->getDirectory() . SP . $entry['name']); ?>
                     <?php $chmodPerms   = FileInfo::getChmodPermission($entryPath); ?>
                     <?php $urlParameter = $appParameter->toString() . '&' . AppDirectory::PARAMETER_NAME_URL . '=' . AppDirectory::rawEncode($entry['name']); ?>
 

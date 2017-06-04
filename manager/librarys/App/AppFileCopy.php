@@ -2,6 +2,9 @@
 
     namespace Librarys\App;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\File\FileInfo;
 
     final class AppFileCopy
@@ -54,7 +57,7 @@
         {
             $this->setDirectory($directory);
             $this->setName($name);
-            $this->setPath(FileInfo::validate($directory));
+            $this->setPath(FileInfo::filterPaths($directory));
             $this->setIsMove($isMove);
             $this->setExistsFunc($existsFunc);
             $this->flushSession();

@@ -10,11 +10,8 @@
 
     require_once('global.php');
 
-    if ($appUser->isLogin() == false)
-        $appAlert->danger(lng('login.alert.not_login'), ALERT_LOGIN, env('app.http.host') . '/user/login.php');
-
     $title  = lng('mysql.home.title_page');
-    $themes = [ env('resource.theme.mysql') ];
+    $themes = [ env('resource.filename.theme.mysql') ];
     $appAlert->setID(ALERT_MYSQL_HOME);
     require_once(ROOT . 'incfiles' . SP . 'header.php');
 
@@ -57,18 +54,13 @@
             }
 
             if ($isFailed == false) {
-                $appMysqlConfigWrite = new AppMysqlConfigWrite($appMysqlConfig);
-                $appMysqlConfigWrite->setSpacing('    ');
-
-                if ($appMysqlConfigWrite->write()) {
+                if ($appMysqlConfig->write()) {
                     if ($appMysqlConnect->openConnect(false)) {
                         $appMysqlConfig->set('mysql_is_connect', true);
 
-                        if ($appMysqlConfigWrite->write() == false) {
+                        if ($appMysqlConfig->write() == false) {
                             $appAlert->danger(lng('mysql.home.alert.mysql_write_config_failed'));
                         } else {
-                            $boot->sleepFixHeaderRedirectUrl();
-
                             if (empty($forms['mysql_name']))
                                 $appAlert->success(lng('mysql.home.alert.mysql_connect_success'), ALERT_MYSQL_LIST_DATABASE, 'list_database.php');
                             else

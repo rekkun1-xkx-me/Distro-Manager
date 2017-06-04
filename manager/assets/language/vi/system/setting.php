@@ -1,7 +1,10 @@
 <?php
 
+    if (defined('LOADED') == false)
+        exit;
+
     return [
-        'title_page' => 'Cài đặt hệ thống',
+        'title_page' => 'Cài đặt cấu hình',
 
         'form' => [
             'input' => [
@@ -51,6 +54,7 @@
         ],
 
         'menu_action' => [
+            'setting_system'  => 'Cài đặt cấu hình',
             'setting_theme'   => 'Cài đặt giao diện',
             'setting_profile' => 'Cài đặt tài khoản',
             'manager_user'    => 'Quản lý người dùng'
