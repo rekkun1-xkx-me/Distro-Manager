@@ -1,5 +1,5 @@
 div#about {
-    background-color: #ffffff;
+    background-color: #454545;
 
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
        -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
@@ -16,7 +16,7 @@ div#about {
 }
 
 div#about > h1 {
-    color: #00897b;
+    color: #8bc34a;
     font-size: 300%;
     font-weight: normal;
     font-variant: normal;
@@ -52,7 +52,7 @@ ul.about-list > li > ul > li {
 }
 
 div#about > ul {
-    border-top: 1px solid #efefef;
+    border-top: 1px solid #505050;
     padding-top: 15px;
 }
 
@@ -87,14 +87,14 @@ ul.about-list > li.label li {
 
 div#about ul > li.label li span,
 ul.about-list > li.label li span {
-	color: #00897b;
+	color: #8bc34a;
     font-weight: bold;
     font-size: 15px;
 }
 
 div#about ul > li.value li span,
 ul.about-list > li.value li span {
-	color: #707070;
+	color: #ffffff;
 }
 
 div#about ul > li.value > li,
@@ -145,12 +145,12 @@ ul.about-list > li.message > div:last-child span {
 }
 
 div.about-button-check {
-    border-top: 1px solid #efefef;
+    border-top: 1px solid #4a4a4a;
     width: auto;
     padding: 10px;
 }
 
 div.about-button-check * {
-    color: #707070;
+    color: #ffffff;
     font-weight: bold;
 }

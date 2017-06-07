@@ -7,7 +7,7 @@ ul.location-path li {
 }
 
 ul.location-path {
-    background-color: #ffffff;
+    background-color: #454545;
     display: block;
 
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
@@ -30,7 +30,7 @@ ul.location-path li {
 }
 
 ul.location-path li span {
-    color: #505050;
+    color: #ffffff;
     font-weight: bold;
     font-size: 15px;
     line-height: 45px;
@@ -38,7 +38,7 @@ ul.location-path li span {
 
 ul.location-path li a:hover span,
 ul.location-path li a:focus span {
-    color: #909090;
+    color: #c0c0c0;
     font-weight: bold;
 }
 
@@ -52,7 +52,7 @@ ul.file-list > li {
 }
 
 ul.file-list {
-    background-color: #ffffff;
+    background-color: #454545;
 
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
        -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
@@ -74,7 +74,7 @@ ul.file-list.no-box-shadow {
 }
 
 ul.file-list > li {
-    border-bottom: 1px solid #efefef;
+    border-bottom: 1px solid #484848;
 
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
@@ -106,7 +106,7 @@ ul.file-list > li span.icomoon {
 ul.file-list > li a:hover,
 ul.file-list > li a:hover span,
 ul.file-list > li a:hover strong {
-    color: #909090;
+    color: #c0c0c0;
 }
 
 ul.file-list > li.type-directory a:hover span.icomoon {
@@ -166,7 +166,14 @@ ul.file-list > li.checkbox-all {
 }
 
 ul.file-list > li.checkbox-all input[type=checkbox] + label span {
+    color: #ffffff;
     padding-left: 10px;
+}
+
+
+ul.file-list > li.checkbox-all input[type=checkbox]:hover + label span,
+ul.file-list > li.checkbox-all input[type=checkbox]:focus + label span {
+    color: #c0c0c0;
 }
 
 ul.file-list > li.type-directory {
@@ -188,21 +195,27 @@ ul.file-list > li.type-directory span.icomoon {
 }
 
 ul.file-list > li.type-file {
-    color: #606060;
+    color: #f0f0f0;
 }
 
 ul.file-list > li.type-file span.icomoon {
+    color: #f0f0f0;
     margin-right: 10px;
 }
 
 ul.file-list > li.back a,
 ul.file-list > li.type-directory a.file-name,
 ul.file-list > li.type-file a.file-name {
+    color: #ffffff;
     display: inline-block;
     max-width: 55%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+ul.file-list > li.type-file a.file-name {
+    color: #f0f0f0;
 }
 
 ul.file-list > li.back a {
@@ -259,13 +272,13 @@ ul.file-list > li.type-file div.chmod-size {
 
 ul.file-list > li.type-directory a.chmod-permission span,
 ul.file-list > li.type-file div.chmod-size span {
-    color: #d0d0d0;
+    color: #707070;
     line-height: 45px;
 }
 
 ul.file-list > li.type-directory a.chmod-permission:hover span,
 ul.file-list > li.type-file div.chmod-size a:hover span {
-    color: #a0a0a0;
+    color: #c0c0c0;
 }
 
 ul.file-info,
@@ -279,7 +292,7 @@ ul.file-info > li > ul li {
 }
 
 ul.file-info {
-    background-color: #ffffff;
+    background-color: #454545;
     margin-bottom: 15px;
 
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
@@ -301,7 +314,7 @@ ul.file-info > li.title {
 }
 
 ul.file-info > li.title > span {
-    color: #505050;
+    color: #ffffff;
     font-weight: normal;
     font-size: 17px;
 }
@@ -324,14 +337,14 @@ ul.file-info > li.label li {
 }
 
 ul.file-info > li.label span {
-    color: #00897b;
+    color: #8bc34a;
     font-weight: bold;
     font-size: 15px;
 }
 
 ul.file-info > li.value,
 ul.file-info > li.value span {
-    color: #707070;
+    color: #ffffff;
 }
 
 ul.file-info > li.value {
