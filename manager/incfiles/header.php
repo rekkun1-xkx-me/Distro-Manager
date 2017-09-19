@@ -1,25 +1,22 @@
 <?php
 
     use Librarys\App\AppAssets;
+    use Librarys\App\AppUser;
+    use Librarys\App\Config\AppConfig;
+    use Librarys\App\Mysql\AppMysqlConfig;
 
     if (!defined('LOADED'))
         exit(0);
 
     requireDefine('asset');
 
-    if (isset($themes) == false || is_array($themes) == false)
-        $themes = array();
-
     if (isset($scripts) == false || is_array($scripts) == false)
         $scripts = array();
 
-    array_unshift($themes, env('resource.filename.theme.icomoon'));
-    array_unshift($themes, env('resource.filename.theme.app'));
-
-    if ($appConfig->get('enable_disable.auto_focus_input_last') == true)
+    if (AppConfig::getInstance()->get('enable_disable.auto_focus_input_last') == true)
         array_unshift($scripts, env('resource.filename.javascript.auto_focus_input_last'));
 
-    if ($appConfig->get('enable_disable.button_save_on_javascript') == true)
+    if (AppConfig::getInstance()->get('enable_disable.button_save_on_javascript') == true)
         array_unshift($scripts, env('resource.filename.javascript.button_save_on_javascript'));
 
     array_unshift($scripts, env('resource.filename.javascript.onload'));
@@ -35,15 +32,11 @@
         <meta http-equiv="Cache-Control" content="private, max-age=0, no-cache, no-store, must-revalidate"/>
         <meta http-equiv="Pragma" content="no-cache"/>
         <meta http-equiv="Expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
+        <link rel="stylesheet" type="text/css" href="<?php echo AppAssets::makeURLResourceTheme(AppConfig::getInstance()->get('theme.directory'), env('resource.filename.theme.app')); ?>" media="all,handheld" />
 
-        <?php foreach ($themes AS $entry) { ?>
-            <link rel="stylesheet" type="text/css" href="<?php echo AppAssets::makeURLResourceTheme($appConfig->get('theme.directory'), $entry); ?>" media="all,handheld" />
-        <?php } ?>
-        <?php unset($themes); ?>
-
-        <link rel="icon" type="image/png" href="<?php echo AppAssets::makeURLResourceIcon($appConfig->get('theme.directory'), env('resource.filename.icon.favicon_png')); ?>"/>
-        <link rel="icon" type="image/x-icon" href="<?php echo AppAssets::makeURLResourceIcon($appConfig->get('theme.directory'), env('resource.filename.icon.favicon_ico')); ?>"/>
-        <link rel="shortcut icon" type="image/x-icon" href="<?php echo AppAssets::makeURLResourceIcon($appConfig->get('theme.directory'), env('resource.filename.icon.favicon_ico')); ?>"/>
+        <link rel="icon" type="image/png" href="<?php echo AppAssets::makeURLResourceIcon(AppConfig::getInstance()->get('theme.directory'), env('resource.filename.icon.favicon_png')); ?>"/>
+        <link rel="icon" type="image/x-icon" href="<?php echo AppAssets::makeURLResourceIcon(AppConfig::getInstance()->get('theme.directory'), env('resource.filename.icon.favicon_ico')); ?>"/>
+        <link rel="shortcut icon" type="image/x-icon" href="<?php echo AppAssets::makeURLResourceIcon(AppConfig::getInstance()->get('theme.directory'), env('resource.filename.icon.favicon_ico')); ?>"/>
 
         <?php foreach ($scripts AS $entry) { ?>
             <script type="text/javascript" src="<?php echo AppAssets::makeURLResourceJavascript($entry); ?>"></script>
@@ -60,7 +53,7 @@
                     </a>
                 </div>
                 <ul id="action">
-                    <?php if ($appUser->isLogin()) { ?>
+                    <?php if (AppUser::getInstance()->isLogin()) { ?>
                         <li>
                             <a href="#">
                                 <span class="icomoon icon-search"></span>
@@ -70,8 +63,8 @@
                         <?php $url    = env('app.http.host') . '/mysql'; ?>
                         <?php $isShow = true; ?>
 
-                        <?php if ($appMysqlConfig->get('mysql_is_connect', false)) { ?>
-                           <?php if ($appMysqlConfig->get('mysql_name', null) == null) { ?>
+                        <?php if (AppMysqlConfig::getInstance()->get('mysql_is_connect', false)) { ?>
+                           <?php if (AppMysqlConfig::getInstance()->get('mysql_name', null) == null) { ?>
                                 <?php $url   .= '/list_database.php'; ?>
                                 <?php $isShow = defined('MYSQL_LIST_DATABASE') == false; ?>
                             <?php } else { ?>

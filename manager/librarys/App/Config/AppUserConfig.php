@@ -5,8 +5,6 @@
     if (defined('LOADED') == false)
         exit;
 
-    use Librarys\Boot;
-
     final class AppUserConfig extends BaseConfig
     {
 
@@ -20,10 +18,30 @@
         const ARRAY_KEY_BAND_AT   = 'band_at';
         const ARRAY_KEY_BAND_OF   = 'band_of';
 
-        public function __construct(Boot $boot)
+        private static $instance;
+
+        protected function __construct()
         {
-            parent::__construct($boot, env('resource.config.user'));
+            parent::__construct(env('resource.config.user'));
             parent::parse(true);
+        }
+
+        protected function __wakeup()
+        {
+
+        }
+
+        protected function __clone()
+        {
+
+        }
+
+        public static function getInstance()
+        {
+            if (null === self::$instance)
+                self::$instance = new AppUserConfig();
+
+            return self::$instance;
         }
 
         public function callbackPreWrite()

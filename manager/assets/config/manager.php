@@ -39,16 +39,13 @@
         'cache' => [
             'css' => [
                 'enable' => true,
-                'minify' => false,
                 'lifetime' => 31536000,
             ],
 
             'js' => [
                 'enable' => true,
-                'minify' => false,
                 'lifetime' => 31536000,
-            ],
-
+            ]
         ],
 
         'tmp' => [
@@ -57,18 +54,16 @@
         ],
 
         'theme' => [
-            'directory' => 'default_dark',
+            'directory' => 'default',
         ],
 
         'check_update' => [
             'enable' => true,
-            'time'   => 86400
+            'time' => 86400,
         ],
 
         'language' => 'vi',
-
-
-        'http_host' => 'http://izerocs.mobi/Manager',
+        'http_host' => 'http://izerocs.net/Manager',
     ];
 
 ?>

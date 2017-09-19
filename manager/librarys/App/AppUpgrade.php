@@ -5,18 +5,15 @@
     if (defined('LOADED') == false)
         exit;
 
-    use Librarys\Boot;
-    use Librarys\File\FileInfo;
-    use Librarys\Zip\PclZip;
+    use Librarys\App\AppUser;
     use Librarys\App\Config\AppAboutConfig;
     use Librarys\App\Config\AppUpgradeConfig;
+    use Librarys\File\FileInfo;
+    use Librarys\Zip\PclZip;
 
     final class AppUpgrade
     {
 
-        private $boot;
-        private $appAboutConfig;
-        private $appUpgradeConfig;
         private $isHasUpgradeLocal;
         private $typeBinInstall;
 
@@ -41,43 +38,31 @@
         const TYPE_BIN_INSTALL_UPGRADE    = 1;
         const TYPE_BIN_INSTALL_ADDITIONAL = 2;
 
-        public function __construct(Boot $boot, $appAboutConfig = null, $appUpgradeConfig = null)
+        public function __construct()
         {
-            $this->boot = $boot;
 
-            if ($appAboutConfig == null)
-                $this->appAboutConfig = new AppAboutConfig($boot);
-            else
-                $this->appAboutConfig = $appAboutConfig;
-
-            if ($appUpgradeConfig == null)
-                $this->appUpgradeConfig = new AppUpgradeConfig($boot);
-            else
-                $this->appUpgradeConfig = $appUpgradeConfig;
         }
 
         public function checkHasUpgradeLocal(&$errorCheckUpgrade = null)
         {
-            global $appUser;
-
-            if ($appUser->isPositionAdminstrator() == false)
+            if (AppUser::getInstance()->isPositionAdminstrator() == false)
                 return false;
 
-            if ($this->appUpgradeConfig->hasEntryConfigArrayAny() == false)
+            if (AppUpgradeConfig::getInstance()->hasEntryConfigArrayAny() == false)
                 return false;
 
-            $versionUpdate  = $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_VERSION);
-            $versionCurrent = $this->appAboutConfig->get(AppAboutConfig::ARRAY_KEY_VERSION);
-            $buildUpdate    = $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_BUILD_LAST);
-            $buildCurrent   = $this->appAboutConfig->get(AppAboutConfig::ARRAY_KEY_BUILD_AT);
+            $versionUpdate  = AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_VERSION);
+            $versionCurrent = AppAboutConfig::getInstance()->get(AppAboutConfig::ARRAY_KEY_VERSION);
+            $buildUpdate    = AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_BUILD_LAST);
+            $buildCurrent   = AppAboutConfig::getInstance()->get(AppAboutConfig::ARRAY_KEY_BUILD_AT);
 
             if (AppUpdate::validateVersionValue($versionCurrent, $versionCurrentMatches) == false)
                 return false;
 
             if (AppUpdate::validateVersionValue($versionUpdate, $versionUpdateMatches) == false) {
-                if (FileInfo::fileExists($this->appUpgradeConfig->getPathConfigSystem())) {
+                if (FileInfo::fileExists(AppUpgradeConfig::getInstance()->getPathConfigSystem())) {
                     AppUpdate::cleanUpgrade();
-                    FileInfo::unlink($this->appUpgradeConfig->getPathConfigSystem());
+                    FileInfo::unlink(AppUpgradeConfig::getInstance()->getPathConfigSystem());
                 }
 
                 return false;
@@ -96,7 +81,7 @@
                     return false;
                 }
 
-                if (strcmp($this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_MD5_BIN_CHECK), @md5_file($binFilePath)) !== 0) {
+                if (strcmp(AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_MD5_BIN_CHECK), @md5_file($binFilePath)) !== 0) {
                     $errorCheckUpgrade = self::ERROR_CHECK_UPGRADE_MD5_CHECK_FAILED;
                     return false;
                 }
@@ -116,7 +101,7 @@
                     return false;
                 }
 
-                if (strcmp($this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_MD5_ADDITIONAL_CHECK), @md5_file($additionalFilePath)) !== 0) {
+                if (strcmp(AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_MD5_ADDITIONAL_CHECK), @md5_file($additionalFilePath)) !== 0) {
                     $errorCheckUpgrade = self::ERROR_CHECK_UPGRADE_MD5_ADDITIONAL_UPDATE_CHECK_FAILED;
                     return false;
                 }
@@ -130,9 +115,7 @@
 
         public function installUpgradeNow($checkHasUpgradeLocal = false, &$errorZipExtract = null, &$errorUpgrade = null)
         {
-            global $appUser;
-
-            if ($appUser->isPositionAdminstrator() == false)
+            if (AppUser::getInstance()->isPositionAdminstrator() == false)
                 return false;
 
             if ($checkHasUpgradeLocal && $this->checkHasUpgradeLocal() == false)
@@ -193,7 +176,7 @@
                         unset($appContent[$prefixFile . $entryFilename]);
                 }
 
-                $appEntryIgones = $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_ENTRY_IGONE_REMOVE);
+                $appEntryIgones = AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_ENTRY_IGONE_REMOVE);
 
                 foreach ($appContent AS $key => $entrys) {
                     $entryFilepath = $entrys['filepath'];
@@ -256,9 +239,7 @@
 
         public function installAdditionalNow($checkHasUpgradeLocal = false, &$errorZipExtract = null, &$errorUpgrade = null)
         {
-            global $appUser;
-
-            if ($appUser->isPositionAdminstrator() == false)
+            if (AppUser::getInstance()->isPositionAdminstrator() == false)
                 return false;
 
             if ($checkHasUpgradeLocal && $this->checkHasUpgradeLocal() == false)
@@ -342,11 +323,11 @@
             FileInfo::fileWrite($logHandle, "Info: Clone and remove file update end\n");
             FileInfo::fileWrite($logHandle, "Info: Update about update begin\n");
 
-            $this->appAboutConfig->setSystem(AppAboutConfig::ARRAY_KEY_VERSION,    $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_VERSION));
-            $this->appAboutConfig->setSystem(AppAboutConfig::ARRAY_KEY_CHECK_AT,   $this->appAboutConfig->get(AppAboutConfig::ARRAY_KEY_CHECK_AT));
-            $this->appAboutConfig->setSystem(AppAboutConfig::ARRAY_KEY_BUILD_AT,   $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_BUILD_LAST));
-            $this->appAboutConfig->setSystem(AppAboutConfig::ARRAY_KEY_UPGRADE_AT, time());
-            $this->appAboutConfig->write();
+            AppAboutConfig::getInstance()->setSystem(AppAboutConfig::ARRAY_KEY_VERSION,    AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_VERSION));
+            AppAboutConfig::getInstance()->setSystem(AppAboutConfig::ARRAY_KEY_CHECK_AT,   AppAboutConfig::getInstance()->get(AppAboutConfig::ARRAY_KEY_CHECK_AT));
+            AppAboutConfig::getInstance()->setSystem(AppAboutConfig::ARRAY_KEY_BUILD_AT,   AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_BUILD_LAST));
+            AppAboutConfig::getInstance()->setSystem(AppAboutConfig::ARRAY_KEY_UPGRADE_AT, time());
+            AppAboutConfig::getInstance()->write();
 
             FileInfo::fileWrite($logHandle, "Info: Update about update end\n");
 
@@ -362,22 +343,12 @@
             return true;
         }
 
-        public function getAppAboutConfig()
-        {
-            return $this->appAboutConfig;
-        }
-
-        public function getAppUpgradeConfig()
-        {
-            return $this->appUpgradeConfig;
-        }
-
         public function getVersionUpgrade()
         {
-            if ($this->appUpgradeConfig->hasEntryConfigArrayAny() == false)
+            if (AppUpgradeConfig::getInstance()->hasEntryConfigArrayAny() == false)
                 return null;
 
-            return $this->appUpgradeConfig->get(AppUpdate::ARRAY_DATA_KEY_VERSION);
+            return AppUpgradeConfig::getInstance()->get(AppUpdate::ARRAY_DATA_KEY_VERSION);
         }
 
         public function getTypeBinInstall()

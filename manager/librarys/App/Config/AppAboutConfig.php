@@ -5,8 +5,6 @@
     if (defined('LOADED') == false)
         exit;
 
-    use Librarys\Boot;
-
     final class AppAboutConfig extends BaseConfig
     {
 
@@ -25,10 +23,30 @@
         const ARRAY_KEY_CHECK_AT   = 'check_at';
         const ARRAY_KEY_BUILD_AT   = 'build_at';
 
-        public function __construct(Boot $boot)
+        private static $instance;
+
+        protected function __construct()
         {
-            parent::__construct($boot, env('resource.config.about'), env('resource.filename.config.about'));
+            parent::__construct(env('resource.config.about'), env('resource.filename.config.about'));
             parent::parse(true);
+        }
+
+        protected function __wakeup()
+        {
+
+        }
+
+        protected function __clone()
+        {
+
+        }
+
+        public static function getInstance()
+        {
+            if (null === self::$instance)
+                self::$instance = new AppAboutConfig();
+
+            return self::$instance;
         }
 
         public function callbackPreWrite()

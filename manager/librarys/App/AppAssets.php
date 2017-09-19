@@ -2,10 +2,11 @@
 
     namespace Librarys\App;
 
+    use Librarys\App\AppDirectory;
     use Librarys\File\FileInfo;
+    use Librarys\Http\Request;
+    use Librarys\App\Config\AppConfig;
     use Librarys\App\Config\AppAssetsConfig;
-    use Librarys\Minify\Css as MinifyCss;
-    use Librarys\Minify\Js as MinifyJs;
 
     final class AppAssets
     {
@@ -49,28 +50,27 @@
 
         public static function makeURLResourceTheme($themeDirectory, $filename)
         {
-            global $boot;
-
             $filename = str_ireplace('.css', null, basename($filename));
             $buffer   = env('app.http.host') . '/asset.php';
-            $buffer  .= '?' . ASSET_PARAMETER_THEME_URL        . '=' . $themeDirectory;
-            $buffer  .= '&' . ASSET_PARAMETER_CSS_URL          . '=' . $filename;
-            $buffer  .= '&' . $boot->getCFSRToken()->getName() . '=' . $boot->getCFSRToken()->getToken();
+            $buffer  .= '?' . ASSET_PARAMETER_THEME_URL . '=' . AppDirectory::rawEncode($themeDirectory);
+            $buffer  .= '&' . ASSET_PARAMETER_CSS_URL   . '=' . AppDirectory::rawEncode($filename);
+            $buffer  .= '&' . cfsrTokenName()           . '=' . cfsrTokenValue();
 
-            if (env('app.dev.enable'))
+            if (env('app.dev.enable') || Request::isLocal())
                 $buffer  .= '&' . ASSET_PARAMETER_RAND_URL . '=' . intval($_SERVER['REQUEST_TIME']);
 
             return $buffer;
         }
 
-        public static function makeURLResourceJavascript($filename)
+        public static function makeURLResourceJavascript($filename, $scriptDirectory = null)
         {
-            global $boot;
-
             $filename = str_ireplace('.js', null, basename($filename));
             $buffer  = env('app.http.host') . '/asset.php';
-            $buffer .= '?' . ASSET_PARAMETER_JS_URL           . '=' . $filename;
-            $buffer .= '&' . $boot->getCFSRToken()->getName() . '=' . $boot->getCFSRToken()->getToken();
+            $buffer .= '?' . ASSET_PARAMETER_JS_URL . '=' . AppDirectory::rawEncode($filename);
+            $buffer .= '&' . cfsrTokenName()        . '=' . cfsrTokenValue();
+
+            if ($scriptDirectory != null)
+                $buffer  .= '&' . ASSET_PARAMETER_JS_DIR_URL . '=' . AppDirectory::rawEncode($scriptDirectory);
 
             if (env('app.dev.enable'))
                 $buffer  .= '&' . ASSET_PARAMETER_RAND_URL . '=' . intval($_SERVER['REQUEST_TIME']);
@@ -95,8 +95,6 @@
 
         private function load($loadType)
         {
-            global $boot, $appConfig;
-
             $filepath = FileInfo::filterPaths($this->pathDirectory . SP . $this->filename);
 
             if (FileInfo::isTypeFile($filepath) == false)
@@ -115,7 +113,7 @@
             $this->buffer = FileInfo::fileReadContents($filepath);
 
             if (FileInfo::isTypeFile($envpath))
-                $this->config = new AppAssetsConfig($boot, $envpath);
+                $this->config = new AppAssetsConfig($envpath);
 
             if ($this->buffer == false)
                 return false;
@@ -133,16 +131,6 @@
                 }
             }
 
-            $minify = null;
-
-            if ($loadType === self::LOAD_CSS && $appConfig->get('cache.css.minify', true))
-                $minify = new MinifyCss($this->buffer);
-            else if ($loadType === self::LOAD_JS && $appConfig->get('cache.js.minify', true))
-                $minify = new MinifyJs($this->buffer);
-
-            if ($minify !== null)
-                $this->buffer = $minify->minify();
-
             if ($this->loadCache($loadType, $filepath, true) && $this->buffer !== false)
                 return true;
 
@@ -151,9 +139,6 @@
 
         private function loadCache($loadType, $filepath, $writeCache = false)
         {
-            global $appConfig;
-
-            $minify        = null;
             $cacheEnable   = true;
             $cacheLifetime = 86400;
             $cacheMime     = null;
@@ -161,21 +146,21 @@
             if ($loadType === self::LOAD_CSS) {
                 header('Content-Type: text/css');
 
-                $cacheEnable   = $appConfig->get('cache.css.enable',   true);
-                $cacheLifetime = $appConfig->get('cache.css.lifetime', 86400);
+                $cacheEnable   = AppConfig::getInstance()->get('cache.css.enable',   true);
+                $cacheLifetime = AppConfig::getInstance()->get('cache.css.lifetime', 86400);
                 $cacheMime     = self::CACHE_CSS_MIME;
             } else if ($loadType === self::LOAD_JS) {
                 header('Content-Type: text/javascript');
 
-                $cacheEnable   = $appConfig->get('cache.js.enable',   true);
-                $cacheLifetime = $appConfig->get('cache.js.lifetime', 86400);
+                $cacheEnable   = AppConfig::getInstance()->get('cache.js.enable',   true);
+                $cacheLifetime = AppConfig::getInstance()->get('cache.js.lifetime', 86400);
                 $cacheMime     = self::CACHE_JS_MIME;
             }
 
             if ($cacheEnable) {
                 $timeNow              = time();
                 $cacheDirectory       = env('app.path.cache');
-                $cacheFilename        = md5($this->filename);
+                $cacheFilename        = md5($this->pathDirectory . SP . $this->filename);
                 $cacheFilepath        = FileInfo::filterPaths($cacheDirectory . SP . $cacheFilename . '.' . $cacheMime);
                 $cacheFiletime        = 0;
                 $fileResourceTime     = 0;
