@@ -10,6 +10,7 @@ define([
     return {
         script: {
             index: "index.php",
+            asset: "asset.php",
             login: "user/login.php"
         },
 
@@ -17,7 +18,8 @@ define([
             timeout:     "timeout",
             abort:       "abort",
             error:       "error",
-            parsererror: "parsererror"
+            parsererror: "parsererror",
+            success:     "success"
         },
 
         open: function(options) {
@@ -33,9 +35,16 @@ define([
             if (!options.dataType)
                 options.dataType = "json";
 
+            if (!options.data || options.data.length <= 0) {
+                options.data = {
+                    submit: 1
+                };
+            }
+
             var self           = this;
             var handlerError   = null;
             var handlerSuccess = null;
+            var handlerBegin   = null;
             var handlerEnd     = null;
 
             if (!options.error)
@@ -48,17 +57,31 @@ define([
             else
                 handlerSuccess = options.success;
 
+            if (!options.begin)
+                handlerBegin = function(xhr) {};
+            else
+                handlerBegin = options.begin;
+
             if (!options.end)
-                handlerEnd = function() {};
+                handlerEnd = function(xhr) {};
             else
                 handlerEnd = options.end;
 
-            options.error = function(xhr, status, throws) {
-                if (status === self.status.parsererror)
-                    alert.add(xhr.responseText);
+            options.beforeSend = function(xhr, settings) {
+                handlerBegin(xhr);
+            };
 
-                handlerError(xhr, status, throws);
-                handlerEnd(status, xhr);
+            options.error = function(xhr, status, throws) {
+                if (status === self.status.parsererror) {
+                    alert.add(xhr.responseText);
+                    console.log(xhr);
+                    console.log(xhr.responseText);
+                }
+
+                var flagEnd = handlerError(xhr, status, throws);
+
+                if (typeof flagEnd === "undefined" || flagEnd == true)
+                    handlerEnd(xhr);
             };
 
             options.success = function(data, status, xhr) {
@@ -67,13 +90,15 @@ define([
                 var dataCode     = data.code;
                 var dataCodeSys  = data.code_sys;
 
-                if (dataAlert.length > 0) {
+                if (dataAlert && dataAlert.length > 0) {
                     for (var i = 0; i < dataAlert.length; ++i)
                         alert.add(dataAlert[i].message, dataAlert[i].type);
                 }
 
-                handlerSuccess(data, status, xhr);
-                handlerEnd(status, xhr);
+                var flagEnd = handlerSuccess(data, status, xhr);
+
+                if (typeof flagEnd === "undefined" || flagEnd == true)
+                    handlerEnd(xhr);
             };
 
             return jquery.ajax(options);

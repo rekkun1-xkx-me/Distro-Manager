@@ -9,11 +9,16 @@
 
     use Librarys\App\AppUser;
     use Librarys\App\AppAlert;
+    use Librarys\App\AppJson;
     use Librarys\App\Config\AppConfig;
     use Librarys\Http\Request;
 
-    if (AppUser::getInstance()->isLogin() && AppUser::getInstance()->isUserBand(null, true) == false)
-        AppAlert::info(lng('user.login.alert.login_already'), ALERT_INDEX, env('app.http.host'));
+    if (AppUser::getInstance()->isLogin() && AppUser::getInstance()->isUserBand(null, true) == false) {
+        if (isset($_POST['init']) == false || Request::isDesktop() == false) {
+            AppJson::getInstance()->setResponseCodeSystem(DEKSTOP_CODE_IS_LOGIN_ALREADY);
+            AppAlert::info(lng('user.login.alert.login_already'), ALERT_INDEX, env('app.http.host'));
+        }
+    }
 
     $title = lng('user.login.title_page');
     AppAlert::setID(ALERT_USER_LOGIN);
@@ -107,6 +112,18 @@
         Request::session()->put(SESSION_NAME_LOCK_TIME,  intval(time()));
     }
 
+    if (Request::isDesktop()) {
+        if (AppUser::getInstance()->isLogin())
+            AppJson::getInstance()->setResponseCodeSystem(DESKTOP_CODE_IS_LOGIN);
+        else
+            AppJson::getInstance()->setResponseCodeSystem(DESKTOP_CODE_IS_NOT_LOGIN);
+
+        AppJson::getInstance()->setResponseDataSystem([
+            'is_login' => AppUser::getInstance()->isLogin()
+        ]);
+
+        AppJson::getInstance()->toResult();
+    }
 ?>
 
     <div id="container-login">

@@ -1,8 +1,22 @@
-define(function(require) {
-    var $         = require("jquery");
-    var container = require("container");
-    var define    = require("define");
+define([
+    "jquery",
+    "container",
+    "define",
+    "lang"
+], function(
+    jquery,
+    container,
+    define,
+    lang
+) {
+    return {
+        init: function() {
+            container.fixSizeChild();
+            container.registerWindowOnResize();
+            container.registerDocumentOnMouseMove();
+            lang.init(this);
 
-    container.fixSizeChild();
-    container.registerWindowOnResize();
+            return this;
+        }
+    }.init();
 });

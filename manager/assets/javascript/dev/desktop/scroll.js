@@ -1,16 +1,30 @@
-define(function(require) {
-    var jquery = require("jquery");
-
+define([
+    "jquery"
+], function(
+    jquery
+) {
     return {
         scrollMargin: 10,
         scrollMin:    30,
 
         emulator: function(selector) {
-            var element = jquery(selector);
-            var parent  = element.parent();
+            if (typeof selector === "undefined") {
+                console.log("Selector scroll is null");
+                return false;
+            }
 
-            this.addScrollThumb(parent);
-            this.bindScrollThumb(parent);
+            var element = selector;
+
+            if (typeof element === "string")
+                element = jquery(element);
+
+            if (element.hasClass("scroll-wrapper") == false)
+                element = element.find("scroll-wrapper");
+            else if (element.parent().hasClass("scroll-wrapper"))
+                element = element.parent();
+
+            this.addScrollThumb(element);
+            this.bindScrollThumb(element);
         },
 
         addScrollThumb: function(selector) {
@@ -21,6 +35,10 @@ define(function(require) {
 
             var scrollVertical   = element.find("div.scroll-vertical");
             var scrollHorizontal = element.find("div.scroll-horizontal");
+            var scrollContent    = element.find("div.scroll-content");
+
+            if (!scrollContent)
+                return false;
 
             if (!scrollVertical.length || scrollVertical.length <= 0)
                 element.append("<div class=\"scroll-vertical\"></div>");
@@ -31,32 +49,26 @@ define(function(require) {
             var scrollVertical   = element.find("div.scroll-vertical");
             var scrollHorizontal = element.find("div.scroll-horizontal");
 
-            var scrollWrapper = element.find("div.scroll-wrapper");
-            var scrollContent = element.find("div.scroll-content");
-
-            if (!scrollContent)
-                return false;
-
             var elementScrollWidth  = scrollContent.get(0);
             var elementScrollHeight = scrollContent.get(0);
 
             if (elementScrollWidth.scrollWidth)
                 elementScrollWidth = elementScrollWidth.scrollWidth;
             else
-                elementScrollWidth = scrollMin;
+                elementScrollWidth = this.scrollMin;
 
             if (elementScrollHeight.scrollHeight)
                 elementScrollHeight = elementScrollHeight.scrollHeight;
             else
-                elementScrollHeight = scrollMin;
+                elementScrollHeight = this.scrollMin;
 
             var elementWidth  = element.width()  || scrollContent.width();
-            var elementHeight = element.height() || scrollContent.height();
+            var elementHeight = element.height() || scrollContent.outerHeight();
 
-            var scrollHorizontalRatio = elementScrollWidth / elementWidth;
-            var scrollVerticalRatio   = elementScrollHeight / elementHeight;
+            var scrollHorizontalRatio = elementScrollWidth  / (elementWidth  - (this.scrollMargin << 1));
+            var scrollVerticalRatio   = elementScrollHeight / (elementHeight - (this.scrollMargin << 1));
 
-            var scrollHorizontalThumb = Math.ceil(elementWidth / scrollHorizontalRatio);
+            var scrollHorizontalThumb = Math.ceil(elementWidth  / scrollHorizontalRatio);
             var scrollVerticalThumb   = Math.ceil(elementHeight / scrollVerticalRatio);
 
             scrollHorizontal.css({
@@ -105,23 +117,25 @@ define(function(require) {
             scrollContentEndLeft = scrollContentEndLeft.scrollWidth - scrollContent.outerWidth();
             scrollContentEndTop  = scrollContentEndTop.scrollHeight - scrollContent.outerHeight();
 
-            jquery(window).resize(function(handler) {
+            // element.unbind("resize").bind("resize", function(handler) {
+            //     elementWidth           = element.width();
+            //     elementHeight          = element.height();
+            //     scrollContentEndLeft   = scrollContent.get(0).scrollWidth  - elementWidth;
+            //     scrollContentEndTop    = scrollContent.get(0).scrollHeight - elementHeight;
+
+            //     scrollContent.scrollTop(0);
+            //     scrollContent.scrollLeft(0);
+            //     self.checkScroll(selector);
+            // });
+
+            scrollContent.unbind("DOMSubtreeModified DOMNodeInserted DOMNodeRemoved").bind("DOMSubtreeModified DOMNodeInserted DOMNodeRemoved", function(e) {
+
                 elementWidth           = element.width();
                 elementHeight          = element.height();
                 scrollContentEndLeft   = scrollContent.get(0).scrollWidth  - elementWidth;
                 scrollContentEndTop    = scrollContent.get(0).scrollHeight - elementHeight;
 
-                scrollContent.scrollTop(0);
-                scrollContent.scrollLeft(0);
-                self.checkScroll(selector);
-            });
-
-            scrollContent.unbind("DOMSubtreeModified DOMNodeInserted DOMNodeRemoved").bind("DOMSubtreeModified DOMNodeInserted DOMNodeRemoved", function() {
-                elementWidth           = element.width();
-                elementHeight          = element.height();
-                scrollContentEndLeft   = scrollContent.get(0).scrollWidth  - elementWidth;
-                scrollContentEndTop    = scrollContent.get(0).scrollHeight - elementHeight;
-
+                self.addScrollThumb(element);
                 self.checkScroll(selector);
 
                 if (scrollHorizontalDown == false) {
@@ -175,13 +189,13 @@ define(function(require) {
                     else if (windowPageXCurrent > windowPageXPrev)
                         scrollHorizontalOffset += windowPageXCurrent - windowPageXPrev;
 
-                    if (scrollHorizontalOffset < scrollHorizontalBegin)
+                    if (scrollHorizontalOffset <= scrollHorizontalBegin)
                         scrollHorizontalOffset = scrollHorizontalBegin;
 
-                    if (scrollHorizontalOffset > scrollHorizontalEnd)
+                    if (scrollHorizontalOffset >= scrollHorizontalEnd)
                         scrollHorizontalOffset = scrollHorizontalEnd;
 
-                    scrollHorizontal.css({ left: scrollHorizontalOffset + "px" });
+                    scrollHorizontal.css({ left: (scrollHorizontalOffset) + "px" });
                     scrollContent.scrollLeft(((scrollHorizontalOffset - self.scrollMargin) / (scrollHorizontalEnd - self.scrollMargin)) * scrollContentEndLeft);
 
                     windowPageXPrev = windowPageXCurrent;
@@ -235,7 +249,7 @@ define(function(require) {
                 });
             });
 
-            scrollContent.scroll(function() {
+            scrollContent.unbind("scroll").bind("scroll", function() {
                 if (scrollHorizontalDown == false) {
                     var scrollHorizontalOffset = scrollContent.scrollLeft() / scrollContentEndLeft;
                     var scrollHorizontalEnd    = elementWidth - scrollHorizontal.width() - (self.scrollMargin << 1);
