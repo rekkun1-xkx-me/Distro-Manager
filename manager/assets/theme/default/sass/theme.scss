@@ -5,7 +5,7 @@
 body {
     background-color: #e3e3e3;
     font-family: $font-family;
-    font-size: 14px;
+    font-size: $font-size;
     margin: 0;
     padding: 0;
     position: relative;
@@ -29,6 +29,10 @@ a {
     }
 }
 
+.no-box-shadow {
+    @include box-shadow(none !important);
+}
+
 @import "form.scss";
 @import "container.scss";
 @import "header.scss";
@@ -44,3 +48,4 @@ a {
 @import "mysql.scss";
 @import "markdown.scss";
 @import "content.scss";
+@import "editor-highlight.scss";

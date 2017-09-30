@@ -50,6 +50,11 @@
     else
         $title = lng('file_edit_text.title_page_as');
 
+    $isEnableEditHighlight = false; //Request::isLocal();
+
+    if ($isEnableEditHighlight)
+        $scripts = [ 'editor_highlight' ];
+
     AppAlert::setID(ALERT_FILE_EDIT_TEXT);
     require_once('incfiles' . SP . 'header.php');
 
@@ -202,7 +207,7 @@
 
     if ($edits['content'] != null && empty($edits['content']) == false && strlen($edits['content']) > 0) {
         $edits['content'] = str_replace("\r\n", "\n", $edits['content']);
-        $edits['content'] = str_replace("\n",   "\n", $edits['content']);
+        $edits['content'] = str_replace("\r",   "\n", $edits['content']);
 
         if ($edits['page']['max'] > 0 && strpos($edits['content'], "\n") !== false) {
             $edits['content_lines']      = explode("\n", $edits['content']);
@@ -231,6 +236,7 @@
         'file_edit_text.php' . $appParameter->toString(),
         'file_edit_text.php' . $appParameter->toString() . '&' . PARAMETER_PAGE_EDIT . '='
     );
+
 ?>
 
     <?php AppAlert::display(); ?>
@@ -251,7 +257,31 @@
             <ul class="form-element">
                 <li class="textarea">
                     <span><?php echo lng('file_edit_text.form.input.content_file'); ?></span>
-                    <textarea name="content" rows="20" wrap="on" autocorrect="off" autocomplete="false" autocapitalize="off" spellcheck="false"><?php echo htmlspecialchars($edits['content']); ?></textarea>
+                    <?php if ($isEnableEditHighlight) { ?>
+                        <div class="editor-highlight" id="editor-highlight">
+                            <div class="editor-highlight-box-parent" id="editor-highlight-box-parent">
+                                <div class="editor-highlight-box-line" id="editor-highlight-box-line"></div>
+                                <div class="editor-highlight-box-content">
+                                    <pre class="editor-highlight-content" id="editor-highlight-content"><?php echo htmlspecialchars($edits['content']); ?></pre>
+                                    <div class="editor-highlight-box-cursor" id="editor-highlight-box-cursor"></div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                                OnLoad.add(function() {
+                                    EditorHighlight.init(
+                                        "editor-highlight",
+                                        "editor-highlight-box-parent",
+                                        "editor-highlight-box-content",
+                                        "editor-highlight-content",
+                                        "editor-highlight-box-line",
+                                        "editor-highlight-box-cursor"
+                                    );
+                                });
+                            </script>
+                        </div>
+                    <?php } else { ?>
+                        <textarea name="content" rows="20" wrap="off" autocomplete="off"><?php echo htmlspecialchars($edits['content']); ?></textarea>
+                    <?php } ?>
                 </li>
                 <?php if ($edits['page']['max'] > 0 && $edits['page']['total'] > 1) { ?>
                     <li class="paging">
@@ -283,14 +313,6 @@
                 <span><?php echo lng('file_info.menu_action.info'); ?></span>
             </a>
         </li>
-        <?php if ($fileMime->isFormatTextEdit() && $fileMime->isFormatTextAsEdit() == false) { ?>
-            <li>
-                <a href="file_edit_text_line.php<?php echo $appParameter->toString(); ?>">
-                    <span class="icomoon icon-edit"></span>
-                    <span><?php echo lng('file_info.menu_action.edit_text_line'); ?></span>
-                </a>
-            </li>
-        <?php } ?>
         <li>
             <a href="file_download.php<?php echo $appParameter->toString(); ?>">
                 <span class="icomoon icon-download"></span>
