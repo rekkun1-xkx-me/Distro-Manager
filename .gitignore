@@ -12,3 +12,4 @@ manager/.gitignore
 manager/package.json
 manager/gulpfile.js
 manager/additional.zip
+manager/bin.zip
