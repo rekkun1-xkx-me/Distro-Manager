@@ -197,18 +197,37 @@
             return null;
         }
 
+        public static function scheme()
+        {
+            $requestScheme = 'http';
+
+            // If server using reverce proxy
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strcasecmp(trim($_SERVER['HTTP_X_FORWARDED_PROTO']), 'https') === 0) {
+                $requestScheme = 'https';
+            } else if (isset($_SERVER['HTTP_HTTPS']) || isset($_SERVER['HTTPS'])) {
+                $httpHttps = null;
+
+                if (isset($_SERVER['HTTPS']))
+                    $httpHttps = trim($_SERVER['HTTPS']);
+                else if (isset($_SERVER['HTTP_HTTPS']))
+                    $httpHttps = trim($_SERVER['HTTP_HTTPS']);
+
+                if (empty($httpHttps))
+                    $requestScheme = 'http';
+                else if (strcasecmp($httpHttps, 'on') === 0 || strcasecmp($httpHttps, '1') || $httpHttps == true)
+                    $requestScheme = 'https';
+            }
+
+            return $requestScheme;
+        }
+
         public static function isLocal($igoneWebLocal = false)
         {
             $host = $_SERVER['HTTP_HOST'];
             $ip   = self::ip();
 
-            if (preg_match('/^127\.0\.0\.1$/', $ip)) {
-                // if (preg_match('/^izerocs\.ga$/i', $host) && $igoneWebLocal)
-                //     return false;
-
-                if (preg_match('/(localhost|127\.0\.0\.1)(:8080)?/i', $host) || preg_match('/^izerocs\.net$/i', $host)/* || preg_match('/^izerocs\.ga$/i', $host)*/)
-                    return true;
-            }
+            if (preg_match('/(localhost|127\.0\.0\.1)(:8080)?/i', $ip) || strcasecmp($host, 'izerocs.local') === 0)
+                return true;
 
             return false;
         }

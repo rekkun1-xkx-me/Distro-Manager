@@ -38,9 +38,12 @@
                 if ($this->isUpdateCache == false)
                     return;
 
-                $cacheConfig = new AppEnvironmentCacheConfig($this->cacheFilePath);
-                $cacheConfig->setConfigArraySystem($this->cache);
-                $cacheConfig->write(true);
+               if (FileInfo::isTypeDirectory($this->cacheDirectory) == false)
+                   FileInfo::mkdir($this->cacheDirectory, true);
+
+               $cacheConfig = new AppEnvironmentCacheConfig($this->cacheFilePath);
+               $cacheConfig->setConfigArraySystem($this->cache);
+               $cacheConfig->write(true);
             });
         }
 
@@ -75,17 +78,7 @@
                 $this->isUpdateCache = true;
             }
 
-            $requestScheme = 'http';
-
-            // If server using reverce proxy
-            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strcasecmp(trim($_SERVER['HTTP_X_FORWARDED_PROTO']), 'https') === 0) {
-                $requestScheme = 'https';
-            } else if (isset($_SERVER['HTTP_HTTPS'])) {
-                $httpHttps = trim($_SERVER['HTTP_HTTPS']);
-
-                if (strcasecmp($httpHttps, 'on') === 0 || strcasecmp($httpHttps, '1') || $httpHttps == true)
-                    $requestScheme = 'https';
-            }
+            $requestScheme = Request::scheme();
 
             $this->cache('server.document_root',  env('SERVER.DOCUMENT_ROOT',  dirname(__DIR__)));
             $this->cache('server.request_scheme', $requestScheme);
@@ -226,6 +219,13 @@
             if (is_array($this->cache)) {
                 $serverHttpHostCache = env('server.http_host');
                 $appHttpHostCache    = env('app.http.host');
+                $requestScheme       = Request::scheme() . '://';
+
+                if (strpos($serverHttpHostCache, $requestScheme) === false)
+                    return false;
+
+                if (strpos($appHttpHostCache, $requestScheme) === false)
+                    return false;
 
                 if (strpos($appHttpHostCache, $serverHttpHostCache) !== 0)
                     return false;
